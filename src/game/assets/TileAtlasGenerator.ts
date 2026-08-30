@@ -1236,6 +1236,175 @@ export class TileAtlasGenerator {
         ctx.fillRect(x + 11, y + 12, 3, 1);
         break;
 
+      // -------------------------------------------------------------
+      // 80-99: Vertical Slice Multi-Tile & Specialized Primitives
+      // -------------------------------------------------------------
+      case 80: // Temple Column Top (Carved Corinthian Capital)
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(x + 2, y + 4, 12, 12);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(x + 1, y + 2, 14, 3);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(x + 2, y + 2, 12, 1);
+        // Fluting
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x + 4, y + 6, 2, 10);
+        ctx.fillRect(x + 10, y + 6, 2, 10);
+        break;
+
+      case 81: // Temple Column Base (Sturdy Plinth)
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(x + 2, y, 12, 12);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(x + 1, y + 11, 14, 4);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x + 4, y, 2, 11);
+        ctx.fillRect(x + 10, y, 2, 11);
+        // Lichen on stone
+        ctx.fillStyle = '#52b788';
+        ctx.fillRect(x + 3, y + 8, 3, 3);
+        break;
+
+      case 82: // Temple Carved Pediment Arch Left
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(x, y + 6, S, 10);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(x, y + 4, S, 3);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x, y + 14, S, 2);
+        // Runic engraving
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(x + 4, y + 9, 6, 2);
+        break;
+
+      case 83: // Temple Carved Pediment Arch Right
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(x, y + 6, S, 10);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(x, y + 4, S, 3);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x, y + 14, S, 2);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(x + 6, y + 9, 6, 2);
+        break;
+
+      case 88: // Riverbank Water Reeds & Lilypads
+        ctx.fillStyle = '#1b6785';
+        ctx.fillRect(x, y, S, S);
+        // Green lilypads
+        ctx.fillStyle = '#15803d';
+        ctx.beginPath();
+        ctx.arc(x + 4, y + 11, 3, 0, Math.PI * 1.8);
+        ctx.fill();
+        // Tall Reeds / Cattails
+        ctx.fillStyle = '#166534';
+        ctx.fillRect(x + 9, y + 3, 1, 12);
+        ctx.fillRect(x + 12, y + 1, 1, 14);
+        ctx.fillStyle = '#78350f'; // Brown heads
+        ctx.fillRect(x + 8, y + 3, 3, 4);
+        ctx.fillRect(x + 11, y + 1, 3, 5);
+        break;
+
+      case 89: // Weathered Tent Canvas & Broken Wagon Wheel
+        ctx.fillStyle = '#418a38';
+        ctx.fillRect(x, y, S, S);
+        // Cloth tent
+        ctx.fillStyle = '#d6d3d1';
+        ctx.fillRect(x + 2, y + 3, 12, 10);
+        ctx.fillStyle = '#78716c';
+        ctx.fillRect(x + 6, y + 5, 4, 8); // Tent flap
+        // Broken wooden wheel
+        ctx.fillStyle = '#78350f';
+        ctx.beginPath();
+        ctx.arc(x + 13, y + 12, 3, 0, Math.PI * 2);
+        ctx.stroke();
+        break;
+
+      case 90: // Sacred Glowing Runic Altar Pedestal
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 1, y + 3, 14, 12);
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(x + 2, y + 4, 12, 10);
+        // Glowing Cyan Crystal Basin
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(x + 4, y + 5, 8, 6);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(x + 5, y + 6, 6, 4);
+        ctx.fillStyle = '#f0f9ff';
+        ctx.fillRect(x + 6, y + 7, 4, 2);
+        // Sacred Rune Glow
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(x + 7, y + 1, 2, 3);
+        ctx.fillRect(x + 7, y + 12, 2, 2);
+        break;
+
+      case 91: // Village Wooden Gatepost with Hanging Lantern
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 4, y + 1, 8, 15);
+        ctx.fillStyle = '#784620';
+        ctx.fillRect(x + 5, y + 2, 6, 13);
+        // Crossbeam
+        ctx.fillStyle = '#45260f';
+        ctx.fillRect(x, y + 3, S, 2);
+        // Glowing Lantern
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(x + 1, y + 6, 3, 4);
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(x + 2, y + 7, 1, 2);
+        break;
+
+      case 92: // Massive 3x3 Elder Oak Crown - Top Left
+        ctx.fillStyle = '#1b4332';
+        ctx.fillRect(x + 3, y + 4, 13, 12);
+        ctx.fillStyle = '#2d6a4f';
+        ctx.fillRect(x + 5, y + 3, 11, 13);
+        ctx.fillStyle = '#52b788';
+        ctx.fillRect(x + 7, y + 5, 7, 6);
+        ctx.fillStyle = '#a7f3d0';
+        ctx.fillRect(x + 9, y + 7, 3, 3);
+        break;
+
+      case 93: // Massive 3x3 Elder Oak Crown - Top Center
+        ctx.fillStyle = '#1b4332';
+        ctx.fillRect(x, y + 2, S, 14);
+        ctx.fillStyle = '#2d6a4f';
+        ctx.fillRect(x, y + 1, S, 14);
+        ctx.fillStyle = '#40916c';
+        ctx.fillRect(x + 2, y + 2, 12, 10);
+        ctx.fillStyle = '#74c69d';
+        ctx.fillRect(x + 4, y + 3, 8, 6);
+        ctx.fillStyle = '#b7e4c7';
+        ctx.fillRect(x + 6, y + 4, 4, 3);
+        break;
+
+      case 94: // Massive 3x3 Elder Oak Crown - Top Right
+        ctx.fillStyle = '#1b4332';
+        ctx.fillRect(x, y + 4, 13, 12);
+        ctx.fillStyle = '#2d6a4f';
+        ctx.fillRect(x, y + 3, 11, 13);
+        ctx.fillStyle = '#40916c';
+        ctx.fillRect(x + 2, y + 5, 7, 6);
+        break;
+
+      case 95: // Massive 3x3 Elder Oak Trunk - Base Center
+        ctx.fillStyle = '#1b4332'; // Shadow
+        ctx.fillRect(x, y, S, 4);
+        // Gnarled Trunk
+        ctx.fillStyle = '#45260f';
+        ctx.fillRect(x + 2, y + 1, 12, 14);
+        ctx.fillStyle = '#6b3a15';
+        ctx.fillRect(x + 4, y + 2, 8, 12);
+        ctx.fillStyle = '#8b5a2b';
+        ctx.fillRect(x + 6, y + 3, 4, 10);
+        // Spreading massive roots
+        ctx.fillStyle = '#45260f';
+        ctx.fillRect(x, y + 11, 4, 4);
+        ctx.fillRect(x + 12, y + 11, 4, 4);
+        // Ancient moss
+        ctx.fillStyle = '#52b788';
+        ctx.fillRect(x + 5, y + 8, 3, 4);
+        break;
+
       default:
         // Generic fallback grid
         ctx.fillStyle = '#64748b';

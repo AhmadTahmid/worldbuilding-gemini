@@ -62,12 +62,26 @@ describe('Aethelgard World Generation & Integrity Suite', () => {
     }
   }, 20000);
 
-  it('should generate settlements with rich morphology, roofs, doors, and district infrastructure', () => {
+  it('should compose the canonical vertical slice journey (Oakhaven -> Deepwood -> Elderwood Shrine)', () => {
     const result = WorldCompiler.compile(baseSpec, bibleData);
-    // Crownport Clocktower plaza check (180, 110)
-    expect(result.map.layers.terrain[110][180]).toBe(8); // Cobblestone pavement
-    // Oakhaven Elder Oak check (80, 125)
-    expect(result.map.layers.lowerObjects[125][80]).toBe(36); // Oak trunk
-    expect(result.map.layers.upperObjects[124][80]).toBe(35); // Oak canopy
+    // 1. Oakhaven 3x3 Elder Oak Monument at (80, 125)
+    expect(result.map.layers.lowerObjects[125][80]).toBe(95); // 3x3 Oak trunk base
+    expect(result.map.layers.upperObjects[123][80]).toBe(93); // 3x3 Oak crown top
+
+    // 2. West Forest Gate at (68, 124)
+    expect(result.map.layers.lowerObjects[124][68]).toBe(91); // Gatepost with lantern
+
+    // 3. Scenic River Bridge Crossing at (74, 95)
+    expect(result.map.layers.terrain[95][74]).toBe(13); // Wooden river bridge
+
+    // 4. Abandoned Hunter's Campsite at (65, 80)
+    expect(result.map.layers.lowerObjects[80][64]).toBe(89); // Tent canvas & wagon wheel
+
+    // 5. Deepwood Threshold Portal at (55, 60)
+    expect(result.map.layers.lowerObjects[59][56]).toBe(41); // Glowing spore mushroom
+
+    // 6. Sacred Elderwood Shrine Sanctuary at (50, 40)
+    expect(result.map.layers.lowerObjects[39][49]).toBe(90); // Sacred glowing runic altar
+    expect(result.map.layers.upperObjects[38][48]).toBe(80); // Temple column capital
   });
 });

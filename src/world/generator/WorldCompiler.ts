@@ -4,6 +4,7 @@ import { WorldGraphGenerator } from './WorldGraphGenerator';
 import { TerrainGenerator } from './TerrainGenerator';
 import { RouteCarver } from './RouteCarver';
 import { SettlementSynthesizer } from './SettlementSynthesizer';
+import { VerticalSliceRouteComposer } from './VerticalSliceRouteComposer';
 import { POIGenerator } from './POIGenerator';
 import { NPCNarrativeGenerator } from './NPCNarrativeGenerator';
 import { WorldValidator, ValidationReport } from './WorldValidator';
@@ -29,10 +30,13 @@ export class WorldCompiler {
     // 4. Synthesize Settlements (Crownport, Oakhaven, Tidebreak, Cragwatch)
     SettlementSynthesizer.synthesize(bible.settlements, terrain, rng);
 
-    // 5. Place Contextual POIs & Visual Secrets
+    // 5. Compose Canonical Vertical Slice (Oakhaven -> Deepwood -> Elderwood Shrine)
+    VerticalSliceRouteComposer.compose(terrain, rng);
+
+    // 6. Place Contextual POIs & Visual Secrets
     const { pois, secrets } = POIGenerator.generate(terrain, rng);
 
-    // 6. Generate 32 Interconnected NPCs with Dialogues and Lore Hints
+    // 7. Generate 32 Interconnected NPCs with Dialogues and Lore Hints
     const npcs = NPCNarrativeGenerator.generate(terrain, rng);
 
     // 7. Assemble Entities

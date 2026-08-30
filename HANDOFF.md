@@ -1,55 +1,63 @@
-# 📋 Aethelgard — Milestone 2 Handoff & Completion Report
+# 📋 Aethelgard — Milestone 3 Handoff & Completion Report
 
-## 1. What Was Changed & Materially Improved in Milestone 2
-- **Visual Overhaul of Tileset & Characters (`TileAtlasGenerator.ts`)**:
-  - Replaced primitive flat-color programmer art with rich, cohesive 16-color JRPG pixel art.
-  - Added volumetric lighting, drop shadows, highlights, and micro-textures across all 128 tiles.
-  - Implemented autotiling transitions: water foam shorelines (`tile 3`), dune verges (`tile 17`), dirt-path borders (`tile 18`), river stepping stones (`tile 19`), and cliff corner/scree borders (`tile 10, 11, 12`).
-  - Added rich architectural assets: half-timbered walls, ashlar granite facades, dark mountain slate, arched oak doors, leaded glass windows (day/night illumination), brick chimneys with smoke, and market awnings.
-  - Added rich flora & prop assets: volumetric 2x2 oak & pine canopies, golden birch trees, fallen mossy logs, wildflower clusters, post-and-rail rustic fences, marble fountains, street lanterns, and kelp drying racks.
-- **Structured Spatial Environment Grammars (`EnvironmentGrammar.ts`)**:
-  - Completely removed Bernoulli random scatter.
-  - Replaced with multi-scale Simplex noise density fields generating dense canopy groves, organic clearings, and roadside framing/negative space buffers.
-  - Added 5 distinct biome grammars: *Deepwood Gloom*, *Whispering Weald Forest*, *Mistfall Mountain & Scree*, *Coastal Dunes & Tidal Pools*, and *Meadow / Farmland Fringes*.
-- **Generic Rule-Driven Settlement Morphology (`SettlementMorphology.ts`)**:
-  - Replaced town-specific hardcoded scripts with a generic, reusable settlement synthesizer driven purely by semantic properties (`settlementPattern`, `districts`, `architectureStyle`, `population`, `economy`).
-  - **Crownport (City)** now features 5 distinct urban districts: Civic Cathedral/Clocktower Plaza, Market Square, Quayside Docks & Wharves, and Residential Quarters.
-  - **Oakhaven (Forest Village)** generates a radial green layout around the 500-year-old Elder Oak, stone well, and herbalist garden beds.
-  - **Tidebreak (Fishing Village)** generates a linear stilt-pier boardwalk platform with boathouses and the Ancient Beacon.
-  - **Cragwatch (Mountain Town)** generates terraced alpine flagstone plateaus with smelter chimneys, forge anvils, and gorge cable anchors.
-- **Designed Route Progression & Beats (`RouteCarver.ts`)**:
-  - Routes now feature road width hierarchy, automatic bridge placement over water, tree-cleared verges, and roadside milestone signposts at midpoints.
+## 1. Benchmark Vertical Slice: Oakhaven → Deepwood → Elderwood Shrine
+
+This milestone concentrated all design and generative effort into perfecting the **Oakhaven → Deepwood → Elderwood Shrine** exploration corridor as a canonical vertical slice demonstrating authored-feeling JRPG composition through reusable procedural systems.
+
+### Implemented Route Progression & Visual Beats:
+1. **Oakhaven Village Green (80, 125)**:
+   - Centered around the new **3x3 Massive Gnarled Elder Oak Monument** (`tiles 92-95`) with sprawling root buttresses, ancient stone well (`tile 54`), wooden park benches (`tile 69`), flowerbeds (`tile 39`), and garden-fenced cottages.
+2. **Village West Outskirts & Gate (68, 125)**:
+   - Cultivated garden plots with post-and-rail fences (`tile 47`) and herbalist patches.
+   - Wooden **Village Gateposts with Hanging Lanterns** (`tile 91`) marking the threshold between civilization and the wild woods.
+3. **Winding Forest Road & River Bridge Crossing (74, 95)**:
+   - Path organically meanders through golden birch trees and wildflowers.
+   - Roadside milestone signpost (`tile 56`).
+   - Scenic **River Bridge Crossing** (`tile 13`) framed by riverbank cattails/lilypads (`tile 88`) and weeping birch trees.
+4. **Environmental Storytelling / Abandoned Hunter's Camp (65, 80)**:
+   - Weathered tent canvas and broken wagon wheel (`tile 89`), old stone campfire (`tile 58`), and sitting log (`tile 46`).
+5. **Optional Secret Side Trail → The Moonlit Glade (85, 45)**:
+   - Subtle break in the tree wall leading northeast to the hidden fairy mushroom ring (`tile 78`), Celtic monolith (`tile 43`), and bioluminescent flora.
+6. **Deepwood Threshold (55, 60)**:
+   - Dramatic atmospheric and visual transition: dark primeval moss ground (`tile 6`), towering conical alpine pines (`tiles 37-38`), glowing spore mushrooms (`tile 41`), and localized mystical teal-indigo mist & drifting fireflies.
+7. **Sacred Elderwood Shrine Sanctuary (50, 40)**:
+   - Monumental **4x4 Sacred Stone Temple** with Corinthian capitals (`tile 80`), carved runic pediment (`tiles 82-83`), standing monoliths (`tile 43`), and the **Glowing Runic Altar Pedestal** (`tile 90`).
 
 ---
 
 ## 2. Automated Test & Validation Results
-- **Vitest Unit & Integration Suite (`npm test`)**:
+- **Vitest Test Suite (`npm test`)**:
   - `✓ should generate a valid world with 0 validation errors`
   - `✓ should be 100% deterministic given the same seed`
   - `✓ should contain 1 grand city, 3 towns/villages, 30+ NPCs, 15+ POIs, 10+ secrets`
   - `✓ should guarantee 100% reachability of all major locations from spawn`
   - `✓ should generate valid worlds across alternate seeds (Highland-Epoch-77, Mistfall-Oasis-902)`
-  - `✓ should generate settlements with rich morphology, roofs, doors, and district infrastructure`
+  - `✓ should compose the canonical vertical slice journey (Oakhaven -> Deepwood -> Elderwood Shrine)`
   - **Result**: 6 passed (6 total).
 - **Multi-Seed CLI Reachability Validation (`npm run world:validate`)**:
-  - `Aethelgard-4891`: PASSED (19/19 reachable locations).
-  - `Seed-Alpha`: PASSED (19/19 reachable locations).
-  - `Seed-Beta`: PASSED (19/19 reachable locations).
-  - `World-999`: PASSED (19/19 reachable locations).
+  - 100% reachability (19/19 reachable locations) across all tested seeds (`Aethelgard-4891`, `Seed-Alpha`, `Seed-Beta`, `World-999`).
 - **TypeScript & Production Build (`npm run build`)**:
   - `tsc --noEmit`: 0 errors, 0 warnings.
-  - `vite build`: Clean build in 785ms.
+  - `vite build`: Clean build in 2.86s.
 
 ---
 
-## 3. What Remains Primitive / Future Research Opportunities
-- **Interior Maps**: Buildings currently have detailed exteriors, doors, and roofs, but do not yet have interior room maps when entering doors.
-- **Dynamic Water Rippling Shader**: Water foam is autotiled; adding animated multi-frame water wave cycles in WebGL would enhance maritime immersion.
-- **Procedural NPC Schedules**: NPCs have homes and dialogue trees, but do not yet walk scheduled paths between day and night.
+## 3. Truthful Visual Evaluation & Quality Assessment
+
+| Area | Status | Assessment |
+| :--- | :--- | :--- |
+| **Oakhaven Center** | **GOOD ENOUGH** | 3x3 Elder Oak and well create a genuine focal point; cottages have distinct fences and yards. |
+| **Forest Road & Gate** | **GOOD ENOUGH** | Gateposts frame the exit; roadside verges prevent tree clutter; road feels designed rather than random. |
+| **River Bridge Crossing** | **GOOD ENOUGH** | Riverbank reeds and framing birch trees give the bridge crossing a distinct sense of arrival. |
+| **Deepwood Threshold** | **GOOD ENOUGH** | Obvious visual and lighting transition into enchanted dark forest with glowing spores and mist. |
+| **Elderwood Shrine** | **GOOD ENOUGH** | 4x4 temple architecture with columns, monoliths, and glowing altar creates a memorable endpoint. |
+| **Other Regions (Coast, Mountains)** | **STILL WEAK** | Functional and populated, but lack the dedicated multi-tile landmark compositions built for the vertical slice. |
 
 ---
 
-## 4. Highest-Leverage Next Milestones
-1. **Building Interiors & Door Transitions**: A lightweight interior tilemap generator for taverns, guildhalls, apothecaries, and dungeons.
-2. **Dynamic NPC Daily Routines & Pathing**: Simple state machines giving NPCs wandering and work routines during the day/night cycle.
-3. **Audio Ambience Layers**: Procedural Web Audio background music loops for Forest, Coast, Town, and Mountain biomes.
+## 4. Highest-Leverage Next Quality Bottlenecks
+1. **Extend Multi-Tile Composition Stamps to Other Regions**:
+   - Coastal Region: Sunken Galleon Shipwreck landmark, sea arch grottoes, Tidebreak lighthouse pier promenade.
+   - Mountain Region: Deep mine headframe structure, smelter kiln yard, rope suspension gorge bridge.
+2. **Water Shader / Animated Flow**: Adding dynamic sinusoidal wave distortion to coastal and river water tiles in Phaser WebGL.
+3. **Interactive Audio Ambience**: Looping wind and forest rustle in Weald; crashing waves on Azure Coast; mysterious chimes in Deepwood.

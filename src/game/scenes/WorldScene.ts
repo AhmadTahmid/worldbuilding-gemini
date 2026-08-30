@@ -532,12 +532,20 @@ export class WorldScene extends Phaser.Scene {
       this.fireflyEmitter.start();
     }
 
+    // Deepwood localized atmospheric enhancement
+    const currentReg = this.getCurrentRegion();
+    if (currentReg && currentReg.id === 'region_deepwood') {
+      // In Deepwood, add mystical enchanted tint even in daytime and keep spores/fireflies active
+      ambientAlpha = Math.max(0.25, ambientAlpha);
+      ambientColor = 0x06282d; // Deep enchanted teal-indigo
+      this.fireflyEmitter.start();
+    }
+
     this.ambientDayNightOverlay.setFillStyle(ambientColor, ambientAlpha);
     this.ambientDayNightOverlay.setPosition(this.player.x - 800, this.player.y - 600);
     this.ambientDayNightOverlay.setSize(1600, 1200);
 
     const timeLabel = hours >= 6 && hours < 18 ? `Day (${timeStr})` : `Night (${timeStr})`;
-    const currentReg = this.getCurrentRegion();
     this.uiManager.updateHUD(currentReg ? currentReg.name : 'Aethelgard Wilds', timeLabel);
   }
 
