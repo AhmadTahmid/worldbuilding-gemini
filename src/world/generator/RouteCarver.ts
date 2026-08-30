@@ -1,6 +1,11 @@
 import { WorldGraph, Point } from '@/types/world';
 import { TerrainData } from './TerrainGenerator';
 
+/**
+ * RouteCarver.ts
+ * Carves organic roadways, bridges, and mountain passes using cost-field A* pathfinding.
+ * Adds scenic road beats, junction signposts, and bridge approaches.
+ */
 export class RouteCarver {
   public static carveRoutes(graph: WorldGraph, terrain: TerrainData): void {
     const nodeMap = new Map(graph.nodes.map((n) => [n.id, n]));
@@ -51,7 +56,7 @@ export class RouteCarver {
           terrain.collision[pt.y][pt.x] = false;
         }
 
-        // Clear tree / boulder obstacles on and adjacent to the path
+        // Clear tree / boulder obstacles on and adjacent to the path corridor
         const width = edge.routeType === 'paved_road' ? 1 : 0;
         for (let dy = -width; dy <= width; dy++) {
           for (let dx = -width; dx <= width; dx++) {
@@ -65,6 +70,21 @@ export class RouteCarver {
                 terrain.terrainTiles[ny][nx] = roadTile;
               }
             }
+          }
+        }
+
+        // Stamp roadside milestone signpost near the midpoint of paved roads
+        if (edge.routeType === 'paved_road' && i === Math.floor(path.length / 2)) {
+          const signY = pt.y - 1;
+          const signX = pt.x + 1;
+          if (
+            signX < terrain.width &&
+            signY >= 0 &&
+            terrain.terrainTiles[signY][signX] === 0 &&
+            terrain.lowerObjectTiles[signY][signX] === 0
+          ) {
+            terrain.lowerObjectTiles[signY][signX] = 56; // Wooden Signpost
+            terrain.collision[signY][signX] = true;
           }
         }
       }

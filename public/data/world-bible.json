@@ -76,6 +76,9 @@
       "economy": ["maritime trade", "banking", "guild commerce", "shipwrighting"],
       "mood": "bustling and ambitious",
       "architectureStyle": "grand_stone",
+      "settlementPattern": "grid_urban",
+      "districts": ["civic", "market", "docks", "residential", "harbor"],
+      "surroundingLandUse": ["coastal_quays", "merchant_warehouses", "orchard_fringes"],
       "landmarks": ["The Great Clocktower", "Admiralty Docks", "Guildmaster Hall", "The King's Fountain"],
       "loreSummary": "Constructed from pale granite and dark slate, Crownport is the jewel of the eastern sea."
     },
@@ -90,6 +93,9 @@
       "economy": ["timber", "herbal medicine", "wild honey", "fletching"],
       "mood": "peaceful, earthy, vigilant",
       "architectureStyle": "timber_thatch",
+      "settlementPattern": "radial_green",
+      "districts": ["civic", "residential", "craft", "farming"],
+      "surroundingLandUse": ["herbal_gardens", "timber_clearings", "beehives"],
       "landmarks": ["The Great Hearth Inn", "Elder Oak Well", "Apothecary Green"],
       "loreSummary": "A cozy village built around a five-century-old oak whose roots feed the central freshwater well."
     },
@@ -104,6 +110,9 @@
       "economy": ["deep-sea fishing", "pearl diving", "kelp weaving", "boat salvage"],
       "mood": "weathered, salty, superstitious",
       "architectureStyle": "coastal_wood",
+      "settlementPattern": "linear_pier",
+      "districts": ["docks", "residential", "harbor"],
+      "surroundingLandUse": ["kelp_drying_racks", "stilt_piers", "salvage_beaches"],
       "landmarks": ["The Ancient Beacon", "Whalebone Pier", "Old Salty's Tavern"],
       "loreSummary": "Its stilt-built docks groan with the ocean tides. Mariners here leave coins at the lighthouse to ward off sea sirens."
     },
@@ -118,6 +127,9 @@
       "economy": ["silver mining", "blacksmithing", "stone masonry", "highland wool"],
       "mood": "sturdy, industrious, proud",
       "architectureStyle": "slate_crag",
+      "settlementPattern": "terrace_mountain",
+      "districts": ["civic", "craft", "residential"],
+      "surroundingLandUse": ["mine_terraces", "smelter_yards", "gorge_bridges"],
       "landmarks": ["The Great Smelter Chimney", "Rope Gorge Bridge", "Miner's Rest Lodge"],
       "loreSummary": "Perched on a razor-thin plateau overlooking the misty valleys below."
     }

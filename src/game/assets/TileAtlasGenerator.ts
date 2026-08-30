@@ -1,7 +1,7 @@
 /**
  * TileAtlasGenerator.ts
- * Generates a cohesive 16x16 pixel-art tileset texture atlas and character spritesheets
- * entirely using HTML Canvas / pixel-level drawing.
+ * Generates a cohesive, beautiful 16x16 pixel-art tileset texture atlas and character spritesheets
+ * entirely using HTML Canvas with rich palettes, multi-tone shading, volumetric lighting, and autotiling transitions.
  * 100% CC0 Public Domain.
  */
 
@@ -22,7 +22,7 @@ export class TileAtlasGenerator {
 
     ctx.imageSmoothingEnabled = false;
 
-    // Draw all tiles
+    // Draw all 128 tile definitions
     for (let id = 0; id < 128; id++) {
       const col = id % this.ATLAS_COLS;
       const row = Math.floor(id / this.ATLAS_COLS);
@@ -36,31 +36,31 @@ export class TileAtlasGenerator {
   }
 
   /**
-   * Generates character spritesheet canvas (4 directions x 3 animation frames)
+   * Generates character spritesheet canvas (12 character classes x 4 directions x 3 animation frames)
    */
   public static generateCharactersCanvas(): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
-    canvas.width = 16 * 12; // 12 character types x 4 directions x 3 frames
-    canvas.height = 16 * 4;
+    canvas.width = 16 * 12 * 3; // 12 characters * 3 animation frames
+    canvas.height = 16 * 4;     // 4 directions (Down, Left, Right, Up)
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) throw new Error('Could not create 2D context for character canvas');
 
     ctx.imageSmoothingEnabled = false;
 
-    // Character color palettes: [hair, skin, tunic, pants]
+    // Curated JRPG Character palettes: [hair, skin, tunic/main, pants/trim, detail/hat]
     const palettes = [
-      ['#5a3d28', '#fcd5b5', '#3b82f6', '#1e293b'], // 0: Player Traveler (Blue cloak)
-      ['#2d3748', '#f8c291', '#dc2626', '#334155'], // 1: Tideguard Guard (Red tunic)
-      ['#713f12', '#f6d8ae', '#16a34a', '#3f2e18'], // 2: Forest Ranger (Green tunic)
-      ['#475569', '#f3c68f', '#0284c7', '#1e293b'], // 3: Tidebreak Mariner (Cyan vest)
-      ['#1f2937', '#e5b887', '#d97706', '#451a03'], // 4: Cragwatch Miner (Orange vest)
-      ['#e2e8f0', '#fbd5c0', '#7c3aed', '#3b0764'], // 5: Elder Scholar (Purple robe)
-      ['#9a3412', '#fde047', '#059669', '#14532d'], // 6: Herbalist Maeve (Emerald gown)
-      ['#3b82f6', '#fcd5b5', '#eab308', '#713f12'], // 7: Merchant Vance (Gold doublet)
-      ['#e0e7ff', '#fcd5b5', '#6366f1', '#312e81'], // 8: Clockmaker (Indigo apron)
-      ['#374151', '#e2e8f0', '#64748b', '#0f172a'], // 9: Ghost Captain (Spectral pale)
-      ['#14532d', '#fcd5b5', '#15803d', '#1e293b'], // 10: Weald Druid (Lush robes)
-      ['#78350f', '#fcd5b5', '#b45309', '#451a03'], // 11: Tavern Keeper (Brown apron)
+      ['#4a3728', '#ffd8b5', '#2563eb', '#1e293b', '#60a5fa'], // 0: Player Traveler (Royal blue cloak & scarf)
+      ['#1e293b', '#f8c291', '#dc2626', '#334155', '#fbbf24'], // 1: Tideguard Knight (Steel & scarlet with gold crest)
+      ['#713f12', '#f6d8ae', '#15803d', '#3f2e18', '#86efac'], // 2: Forest Warden (Forest green tunic & leather)
+      ['#334155', '#f3c68f', '#0284c7', '#1e293b', '#f8fafc'], // 3: Mariner Pilot (Nautical navy & white)
+      ['#1f2937', '#e5b887', '#ea580c', '#451a03', '#facc15'], // 4: Cragwatch Miner (Heavy apron & brass helmet)
+      ['#e2e8f0', '#fbd5c0', '#7c3aed', '#3b0764', '#c084fc'], // 5: High Scholar (Amethyst robe & silver beard)
+      ['#9a3412', '#fde047', '#059669', '#14532d', '#f43f5e'], // 6: Herbalist Maeve (Emerald gown with red wild rose)
+      ['#1d4ed8', '#fcd5b5', '#ca8a04', '#713f12', '#fef08a'], // 7: Guild Merchant (Opulent saffron & velvet)
+      ['#4338ca', '#fcd5b5', '#4f46e5', '#312e81', '#38bdf8'], // 8: Clockmaker (Indigo apron with brass goggles)
+      ['#64748b', '#e2e8f0', '#94a3b8', '#0f172a', '#38bdf8'], // 9: Pale Spectral Captain (Ethereal mist hue)
+      ['#14532d', '#fcd5b5', '#166534', '#1e293b', '#a7f3d0'], // 10: Ancient Weald Druid (Verdant leaf mantle)
+      ['#78350f', '#fcd5b5', '#b45309', '#451a03', '#fef3c7'], // 11: Tavern Keeper (Warm cider apron)
     ];
 
     for (let c = 0; c < palettes.length; c++) {
@@ -78,683 +78,1241 @@ export class TileAtlasGenerator {
     return canvas;
   }
 
+  /**
+   * Master Tile Drawing Method
+   */
   private static drawTile(ctx: CanvasRenderingContext2D, id: number, x: number, y: number): void {
     const S = this.TILE_SIZE;
 
     switch (id) {
-      case 0: // 0: Empty / Void
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(x, y, S, S);
+      // -------------------------------------------------------------
+      // 0-19: Base Ground, Waters, Shorelines, Paths, Bridges
+      // -------------------------------------------------------------
+      case 0: // Void / Transparent
+        ctx.clearRect(x, y, S, S);
         break;
 
-      case 1: // 1: Deep Ocean
-        ctx.fillStyle = '#0f3854';
+      case 1: // Deep Ocean: Rich blue with gentle waves
+        ctx.fillStyle = '#0f2b48';
         ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#18527a';
-        ctx.fillRect(x + 2, y + 4, 4, 1);
-        ctx.fillRect(x + 10, y + 11, 5, 1);
+        ctx.fillStyle = '#163d66';
+        ctx.fillRect(x + 2, y + 3, 5, 1);
+        ctx.fillRect(x + 9, y + 10, 6, 1);
+        ctx.fillStyle = '#22578c';
+        ctx.fillRect(x + 3, y + 4, 3, 1);
+        ctx.fillRect(x + 11, y + 11, 2, 1);
         break;
 
-      case 2: // 2: Shallow Ocean / Coast
-        ctx.fillStyle = '#1d6387';
+      case 2: // Shallow Coast: Vibrant tropical aquamarine with light refraction
+        ctx.fillStyle = '#1b6785';
         ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#2b84b3';
-        ctx.fillRect(x + 3, y + 3, 5, 1);
-        ctx.fillRect(x + 9, y + 10, 4, 1);
-        break;
-
-      case 3: // 3: Water Foam / Edge
-        ctx.fillStyle = '#1d6387';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#7dd3fc';
+        ctx.fillStyle = '#278ca6';
         ctx.fillRect(x + 1, y + 2, 6, 2);
         ctx.fillRect(x + 8, y + 8, 7, 2);
+        ctx.fillStyle = '#4cc9f0';
+        ctx.fillRect(x + 3, y + 3, 3, 1);
+        ctx.fillRect(x + 10, y + 9, 3, 1);
         break;
 
-      case 4: // 4: Sand / Beach
-        ctx.fillStyle = '#d6ba82';
+      case 3: // Shoreline Water Foam
+        ctx.fillStyle = '#1b6785';
         ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#c4a56c';
-        ctx.fillRect(x + 3, y + 4, 1, 1);
-        ctx.fillRect(x + 11, y + 9, 1, 1);
-        ctx.fillRect(x + 7, y + 13, 1, 1);
+        ctx.fillStyle = '#4cc9f0';
+        ctx.fillRect(x, y + 1, S, 4);
+        ctx.fillStyle = '#f0f9ff';
+        ctx.fillRect(x + 1, y + 2, 4, 2);
+        ctx.fillRect(x + 7, y + 1, 5, 2);
+        ctx.fillRect(x + 13, y + 3, 2, 1);
         break;
 
-      case 5: // 5: Lush Grass (Meadow)
-        ctx.fillStyle = '#4b8f3c';
+      case 4: // Warm Sand Beach: Golden dunes with texture grains
+        ctx.fillStyle = '#d9b675';
         ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#5aa849';
-        ctx.fillRect(x + 3, y + 3, 1, 2);
-        ctx.fillRect(x + 10, y + 8, 1, 2);
-        ctx.fillStyle = '#3f7a32';
-        ctx.fillRect(x + 4, y + 4, 1, 1);
-        ctx.fillRect(x + 11, y + 9, 1, 1);
-        break;
-
-      case 6: // 6: Dark Forest Grass (Deepwood)
-        ctx.fillStyle = '#2a5e2c';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#3a783d';
-        ctx.fillRect(x + 2, y + 5, 1, 2);
-        ctx.fillRect(x + 9, y + 11, 1, 2);
-        ctx.fillStyle = '#1f4721';
-        ctx.fillRect(x + 3, y + 6, 1, 1);
-        break;
-
-      case 7: // 7: Dirt Trail
-        ctx.fillStyle = '#946f48';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#7a5836';
-        ctx.fillRect(x + 2, y + 2, 2, 1);
-        ctx.fillRect(x + 10, y + 7, 3, 1);
+        ctx.fillStyle = '#c7a362';
+        ctx.fillRect(x + 2, y + 3, 2, 1);
+        ctx.fillRect(x + 9, y + 7, 2, 1);
         ctx.fillRect(x + 5, y + 12, 2, 1);
-        ctx.fillStyle = '#ab845b';
-        ctx.fillRect(x + 7, y + 4, 1, 1);
+        ctx.fillStyle = '#f2d79d';
+        ctx.fillRect(x + 3, y + 4, 1, 1);
+        ctx.fillRect(x + 11, y + 8, 1, 1);
+        ctx.fillRect(x + 14, y + 2, 1, 1);
         break;
 
-      case 8: // 8: Cobblestone Paved Road (Crownport)
+      case 5: // Lush Meadow Grass: Rich emerald greens with layered blades
+        ctx.fillStyle = '#418a38';
+        ctx.fillRect(x, y, S, S);
+        // Highlight tufts
+        ctx.fillStyle = '#5fb84d';
+        ctx.fillRect(x + 2, y + 3, 2, 3);
+        ctx.fillRect(x + 9, y + 8, 2, 3);
+        ctx.fillRect(x + 13, y + 2, 1, 2);
+        // Shadow tufts
+        ctx.fillStyle = '#2f6927';
+        ctx.fillRect(x + 2, y + 6, 2, 1);
+        ctx.fillRect(x + 9, y + 11, 2, 1);
+        ctx.fillRect(x + 5, y + 13, 2, 1);
+        break;
+
+      case 6: // Deepwood Dark Grass: Mystical deep teal-green with moss specks
+        ctx.fillStyle = '#235229';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#327039';
+        ctx.fillRect(x + 3, y + 4, 2, 2);
+        ctx.fillRect(x + 10, y + 10, 2, 2);
+        ctx.fillStyle = '#143618';
+        ctx.fillRect(x + 4, y + 6, 1, 1);
+        ctx.fillRect(x + 11, y + 12, 1, 1);
+        ctx.fillStyle = '#52b788'; // Spore dot
+        ctx.fillRect(x + 7, y + 2, 1, 1);
+        break;
+
+      case 7: // Earth Dirt Path: Warm loam with rounded pebbles
+        ctx.fillStyle = '#9c6f44';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#7d532f';
+        ctx.fillRect(x + 2, y + 4, 3, 2);
+        ctx.fillRect(x + 9, y + 11, 4, 2);
+        ctx.fillRect(x + 11, y + 3, 2, 1);
+        ctx.fillStyle = '#bfa07c'; // Highlight pebbles
+        ctx.fillRect(x + 3, y + 3, 1, 1);
+        ctx.fillRect(x + 10, y + 10, 1, 1);
+        ctx.fillRect(x + 6, y + 8, 1, 1);
+        break;
+
+      case 8: // Crownport Cobblestone: Stylized ashlar pavers with beveled highlights
         ctx.fillStyle = '#64748b';
         ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#475569';
-        // Draw brick pattern
-        ctx.strokeRect(x + 0.5, y + 0.5, 7, 7);
-        ctx.strokeRect(x + 8.5, y + 0.5, 7, 7);
-        ctx.strokeRect(x + 4.5, y + 8.5, 7, 7);
+        // Mortar lines
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x, y + 7, S, 1);
+        ctx.fillRect(x, y + 15, S, 1);
+        ctx.fillRect(x + 7, y, 1, 7);
+        ctx.fillRect(x + 3, y + 8, 1, 7);
+        ctx.fillRect(x + 11, y + 8, 1, 7);
+        // Paver highlight bevels
         ctx.fillStyle = '#94a3b8';
-        ctx.fillRect(x + 2, y + 2, 4, 4);
-        ctx.fillRect(x + 10, y + 2, 4, 4);
-        ctx.fillRect(x + 6, y + 10, 4, 4);
+        ctx.fillRect(x + 1, y + 1, 6, 1);
+        ctx.fillRect(x + 8, y + 1, 7, 1);
+        ctx.fillRect(x + 1, y + 9, 2, 1);
+        ctx.fillRect(x + 4, y + 9, 6, 1);
+        ctx.fillRect(x + 12, y + 9, 3, 1);
+        // Paver stone texture
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(x + 5, y + 5, 2, 2);
+        ctx.fillRect(x + 9, y + 13, 2, 2);
         break;
 
-      case 9: // 9: Mountain Slate / Stone Floor
-        ctx.fillStyle = '#505a69';
+      case 9: // Alpine Slate Stone Floor: Dark cut mountain slate with chisel texture
+        ctx.fillStyle = '#475569';
         ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#6b788a';
-        ctx.fillRect(x + 1, y + 1, 6, 6);
-        ctx.fillRect(x + 8, y + 8, 7, 7);
-        ctx.fillStyle = '#3a414c';
-        ctx.fillRect(x + 1, y + 7, 7, 1);
-        ctx.fillRect(x + 7, y + 1, 1, 7);
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x, y, S, 1);
+        ctx.fillRect(x, y, 1, S);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x + 1, y + 1, S - 2, 1);
+        ctx.fillRect(x + 1, y + 1, 1, S - 2);
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x + 4, y + 5, 4, 3);
+        ctx.fillRect(x + 10, y + 11, 3, 3);
         break;
 
-      case 10: // 10: Cliff Top Edge
-        ctx.fillStyle = '#4b8f3c'; // Grass top
+      case 10: // Cliff Top Edge: Grass mantle with vertical rock shadow
+        ctx.fillStyle = '#418a38';
         ctx.fillRect(x, y, S, 6);
-        ctx.fillStyle = '#5a6578'; // Stone cliff face
+        ctx.fillStyle = '#5fb84d';
+        ctx.fillRect(x, y, S, 2);
+        ctx.fillStyle = '#2f6927';
+        ctx.fillRect(x, y + 5, S, 1);
+        // Stone face drop
+        ctx.fillStyle = '#475569';
         ctx.fillRect(x, y + 6, S, 10);
-        ctx.fillStyle = '#39414d';
+        ctx.fillStyle = '#1e293b';
         ctx.fillRect(x, y + 6, S, 2);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x + 2, y + 9, 3, 4);
+        ctx.fillRect(x + 9, y + 8, 4, 5);
         break;
 
-      case 11: // 11: Cliff Wall Center
-        ctx.fillStyle = '#47505e';
+      case 11: // Cliff Wall Mid Face: Heavy textured mountain crags
+        ctx.fillStyle = '#475569';
         ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#343b45';
-        ctx.fillRect(x + 3, y + 2, 2, 8);
-        ctx.fillRect(x + 10, y + 6, 2, 7);
-        ctx.fillStyle = '#5e697a';
-        ctx.fillRect(x + 1, y + 1, 2, 2);
-        ctx.fillRect(x + 8, y + 5, 2, 2);
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x + 2, y + 2, 5, 8);
+        ctx.fillRect(x + 10, y + 5, 4, 9);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x + 1, y + 1, 3, 2);
+        ctx.fillRect(x + 8, y + 4, 3, 2);
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 6, y + 6, 2, 8);
         break;
 
-      case 12: // 12: Cliff Base
-        ctx.fillStyle = '#3e4652';
-        ctx.fillRect(x, y, S, 12);
-        ctx.fillStyle = '#4b8f3c'; // Grass at bottom
-        ctx.fillRect(x, y + 12, S, 4);
-        ctx.fillStyle = '#2c323b';
-        ctx.fillRect(x, y + 11, S, 2);
-        break;
-
-      case 13: // 13: Wooden Bridge Horizontal
-        ctx.fillStyle = '#80512c';
+      case 12: // Cliff Base / Scree Slope: Rubble debris onto grass
+        ctx.fillStyle = '#418a38';
         ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#573317';
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x, y, S, 4);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x + 2, y + 4, 3, 3);
+        ctx.fillRect(x + 9, y + 5, 4, 3);
+        ctx.fillRect(x + 6, y + 9, 3, 2);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(x + 3, y + 4, 1, 1);
+        ctx.fillRect(x + 10, y + 5, 1, 1);
+        break;
+
+      case 13: // Wooden River Bridge (Horizontal): Sturdy oak planks with railings
+        // Water underneath
+        ctx.fillStyle = '#1b6785';
+        ctx.fillRect(x, y, S, S);
+        // Bridge Deck
+        ctx.fillStyle = '#8b5a2b';
+        ctx.fillRect(x, y + 2, S, 12);
+        // Planks separation
+        ctx.fillStyle = '#5c3a1e';
+        for (let px = x; px < x + S; px += 4) {
+          ctx.fillRect(px, y + 2, 1, 12);
+        }
+        // Top & Bottom Railings
+        ctx.fillStyle = '#b5793e';
+        ctx.fillRect(x, y + 1, S, 2);
+        ctx.fillRect(x, y + 13, S, 2);
+        ctx.fillStyle = '#45260f';
+        ctx.fillRect(x, y + 3, S, 1);
+        ctx.fillRect(x, y + 15, S, 1);
+        break;
+
+      case 14: // Wooden River Bridge (Vertical)
+        ctx.fillStyle = '#1b6785';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#8b5a2b';
+        ctx.fillRect(x + 2, y, 12, S);
+        ctx.fillStyle = '#5c3a1e';
+        for (let py = y; py < y + S; py += 4) {
+          ctx.fillRect(x + 2, py, 12, 1);
+        }
+        ctx.fillStyle = '#b5793e';
+        ctx.fillRect(x + 1, y, 2, S);
+        ctx.fillRect(x + 13, y, 2, S);
+        ctx.fillStyle = '#45260f';
+        ctx.fillRect(x + 3, y, 1, S);
+        ctx.fillRect(x + 15, y, 1, S);
+        break;
+
+      case 15: // Weathered Pier / Boardwalk: Coastal planks over water with pilings
+        ctx.fillStyle = '#1b6785';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#7a6652';
+        ctx.fillRect(x + 1, y + 1, 14, 14);
+        ctx.fillStyle = '#524335';
+        ctx.fillRect(x + 1, y + 4, 14, 1);
+        ctx.fillRect(x + 1, y + 9, 14, 1);
+        ctx.fillRect(x + 1, y + 14, 14, 1);
+        ctx.fillStyle = '#a68e77';
+        ctx.fillRect(x + 1, y + 1, 14, 1);
+        // Rusty nail heads
+        ctx.fillStyle = '#3e2e20';
+        ctx.fillRect(x + 3, y + 2, 1, 1);
+        ctx.fillRect(x + 12, y + 2, 1, 1);
+        ctx.fillRect(x + 3, y + 6, 1, 1);
+        ctx.fillRect(x + 12, y + 6, 1, 1);
+        break;
+
+      case 16: // Stone Quay Wall (Crownport Waterfront)
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x, y + 14, S, 2);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x, y, S, 2);
+        // Iron Mooring Ring
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(x + 7, y + 6, 3, 4);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(x + 8, y + 7, 1, 2);
+        break;
+
+      case 17: // Sand / Beach Transition to Grass (Dune verge)
+        ctx.fillStyle = '#d9b675';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#418a38';
+        ctx.fillRect(x, y, S, 8);
+        ctx.fillStyle = '#5fb84d';
+        ctx.fillRect(x + 2, y + 7, 3, 2);
+        ctx.fillRect(x + 9, y + 7, 4, 3);
+        ctx.fillStyle = '#c7a362';
+        ctx.fillRect(x + 4, y + 12, 2, 1);
+        break;
+
+      case 18: // Dirt Path Transition to Grass (Verge)
+        ctx.fillStyle = '#418a38';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#9c6f44';
+        ctx.fillRect(x + 3, y + 3, 10, 10);
+        ctx.fillStyle = '#7d532f';
+        ctx.fillRect(x + 5, y + 5, 6, 6);
+        ctx.fillStyle = '#5fb84d';
+        ctx.fillRect(x + 2, y + 2, 2, 1);
+        ctx.fillRect(x + 12, y + 11, 2, 1);
+        break;
+
+      case 19: // River Stepping Stones (Natural crossing)
+        ctx.fillStyle = '#1b6785';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x + 3, y + 3, 10, 10);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(x + 4, y + 4, 8, 4);
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x + 4, y + 10, 8, 2);
+        // Green lichen patch
+        ctx.fillStyle = '#52b788';
+        ctx.fillRect(x + 5, y + 5, 3, 2);
+        break;
+
+      // -------------------------------------------------------------
+      // 20-34: Architecture: Roofs, Walls, Doors, Windows, Details
+      // -------------------------------------------------------------
+      case 20: // Slate Blue Roof (Crownport City Slate Gable)
+        ctx.fillStyle = '#2c4365';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#1d2d44';
+        ctx.fillRect(x, y + 14, S, 2);
+        ctx.fillStyle = '#415a77';
+        ctx.fillRect(x, y, S, 2);
+        ctx.fillRect(x + 2, y + 4, 5, 4);
+        ctx.fillRect(x + 9, y + 8, 5, 4);
+        ctx.fillStyle = '#778da9';
+        ctx.fillRect(x + 3, y + 5, 2, 1);
+        ctx.fillRect(x + 10, y + 9, 2, 1);
+        break;
+
+      case 21: // Woven Thatch Roof (Oakhaven Forest Village)
+        ctx.fillStyle = '#c2883f';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#8f5e23';
+        ctx.fillRect(x, y + 13, S, 3);
+        ctx.fillStyle = '#dfaa5d';
+        for (let py = y; py < y + 12; py += 3) {
+          ctx.fillRect(x, py, S, 1);
+        }
+        ctx.fillStyle = '#fae19c';
+        ctx.fillRect(x + 2, y + 2, 4, 1);
+        ctx.fillRect(x + 9, y + 5, 4, 1);
+        break;
+
+      case 22: // Weathered Coastal Shingles (Tidebreak Stilt Shacks)
+        ctx.fillStyle = '#6b7280';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#374151';
+        ctx.fillRect(x, y + 14, S, 2);
+        ctx.fillStyle = '#9ca3af';
+        ctx.fillRect(x, y, S, 2);
+        ctx.fillRect(x + 3, y + 3, 4, 3);
+        ctx.fillRect(x + 9, y + 7, 4, 3);
+        break;
+
+      case 23: // Dark Alpine Slate Roof (Cragwatch Mountain Forge)
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(x, y + 14, S, 2);
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x, y, S, 2);
+        ctx.fillRect(x + 2, y + 3, 5, 4);
+        ctx.fillRect(x + 9, y + 8, 5, 4);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x + 3, y + 4, 2, 1);
+        ctx.fillRect(x + 10, y + 9, 2, 1);
+        break;
+
+      case 24: // Ashlar Granite Wall (Crownport Stone Facade)
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(x, y + 7, S, 1);
+        ctx.fillRect(x, y + 15, S, 1);
+        ctx.fillRect(x + 7, y, 1, 7);
+        ctx.fillRect(x + 4, y + 8, 1, 7);
+        ctx.fillRect(x + 12, y + 8, 1, 7);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(x + 1, y + 1, 5, 2);
+        ctx.fillRect(x + 8, y + 1, 6, 2);
+        ctx.fillRect(x + 5, y + 9, 6, 2);
+        break;
+
+      case 25: // Half-Timbered Plaster Wall (Oakhaven Timber Cottage)
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(x, y, S, S);
+        // Timber beams
+        ctx.fillStyle = '#5c3a1e';
         ctx.fillRect(x, y, S, 2);
         ctx.fillRect(x, y + 14, S, 2);
-        // Vertical planks
-        ctx.fillStyle = '#a1683b';
-        for (let px = 2; px < S; px += 4) {
-          ctx.fillRect(x + px, y + 2, 3, 12);
-        }
-        break;
-
-      case 14: // 14: Wooden Bridge Vertical
-        ctx.fillStyle = '#80512c';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#573317';
         ctx.fillRect(x, y, 2, S);
         ctx.fillRect(x + 14, y, 2, S);
-        // Horizontal planks
-        ctx.fillStyle = '#a1683b';
-        for (let py = 2; py < S; py += 4) {
-          ctx.fillRect(x + 2, y + py, 12, 3);
+        // Diagonal timber strut
+        for (let i = 2; i < 14; i++) {
+          ctx.fillRect(x + i, y + i, 2, 1);
         }
+        ctx.fillStyle = '#8b5a2b';
+        ctx.fillRect(x + 1, y + 1, S - 2, 1);
         break;
 
-      case 15: // 15: Wooden Pier / Dock Plank
-        ctx.fillStyle = '#94663e';
+      case 26: // Weathered Wood Wall (Tidebreak Horizontal Siding)
+        ctx.fillStyle = '#8a7968';
         ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#6b4625';
-        ctx.fillRect(x, y + 7, S, 1);
-        ctx.fillRect(x, y + 15, S, 1);
-        ctx.fillStyle = '#ba8554';
-        ctx.fillRect(x + 1, y + 1, 14, 6);
-        ctx.fillRect(x + 1, y + 8, 14, 6);
-        break;
-
-      case 16: // 16: Stone Quay / Sea Wall
-        ctx.fillStyle = '#475569';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#64748b';
-        ctx.fillRect(x + 1, y + 1, 14, 5);
-        ctx.fillStyle = '#334155';
-        ctx.fillRect(x, y + 6, S, 2);
-        ctx.fillRect(x + 1, y + 8, 14, 7);
-        break;
-
-      // Buildings & Architecture (20-34)
-      case 20: // Grand Granite Wall (Crownport)
-        ctx.fillStyle = '#94a3b8';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#64748b';
-        ctx.strokeRect(x + 0.5, y + 0.5, S - 1, S - 1);
-        ctx.fillStyle = '#cbd5e1';
-        ctx.fillRect(x + 2, y + 2, 12, 5);
-        ctx.fillRect(x + 2, y + 9, 12, 5);
-        break;
-
-      case 21: // Timber Wall (Oakhaven)
-        ctx.fillStyle = '#6d4323';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#452610';
+        ctx.fillStyle = '#4a3d31';
+        for (let py = y + 3; py < y + S; py += 4) {
+          ctx.fillRect(x, py, S, 1);
+        }
+        ctx.fillStyle = '#b5a494';
+        ctx.fillRect(x, y, S, 1);
         ctx.fillRect(x, y + 4, S, 1);
-        ctx.fillRect(x, y + 9, S, 1);
-        ctx.fillRect(x, y + 14, S, 1);
-        ctx.fillStyle = '#8f5c35';
-        ctx.fillRect(x + 1, y + 1, S - 2, 3);
-        ctx.fillRect(x + 1, y + 5, S - 2, 4);
-        ctx.fillRect(x + 1, y + 10, S - 2, 4);
+        ctx.fillRect(x, y + 8, S, 1);
         break;
 
-      case 22: // Weathered Coastal Wood (Tidebreak)
-        ctx.fillStyle = '#64748b';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#475569';
-        ctx.fillRect(x, y + 5, S, 1);
-        ctx.fillRect(x, y + 11, S, 1);
-        ctx.fillStyle = '#94a3b8';
-        ctx.fillRect(x + 1, y + 1, S - 2, 4);
-        ctx.fillRect(x + 1, y + 6, S - 2, 5);
-        break;
-
-      case 23: // Dark Slate Stone Wall (Cragwatch)
+      case 27: // Dark Slate Wall (Cragwatch Mountain Mining Fortress)
         ctx.fillStyle = '#334155';
         ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#1e293b';
-        ctx.strokeRect(x + 0.5, y + 0.5, S - 1, S - 1);
-        ctx.fillStyle = '#475569';
-        ctx.fillRect(x + 2, y + 2, 5, 5);
-        ctx.fillRect(x + 9, y + 9, 5, 5);
-        break;
-
-      case 24: // Grand Blue Slate Roof
-        ctx.fillStyle = '#1e3a5f';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#2d5a88';
-        ctx.fillRect(x + 1, y + 1, 6, 6);
-        ctx.fillRect(x + 8, y + 1, 7, 6);
-        ctx.fillRect(x + 4, y + 8, 7, 7);
-        ctx.fillStyle = '#10233b';
-        ctx.fillRect(x, y + 7, S, 1);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(x, y + 8, S, 1);
         ctx.fillRect(x, y + 15, S, 1);
-        break;
-
-      case 25: // Thatch Roof
-        ctx.fillStyle = '#996f26';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#c7963c';
-        for (let py = 1; py < S; py += 3) {
-          ctx.fillRect(x + 1, y + py, S - 2, 2);
-        }
-        ctx.fillStyle = '#6b4c14';
-        ctx.fillRect(x, y + 14, S, 2);
-        break;
-
-      case 26: // Red Terracotta Roof
-        ctx.fillStyle = '#991b1b';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#dc2626';
-        ctx.fillRect(x + 1, y + 1, 6, 6);
-        ctx.fillRect(x + 8, y + 1, 7, 6);
-        ctx.fillRect(x + 4, y + 8, 7, 7);
-        ctx.fillStyle = '#7f1d1d';
-        ctx.fillRect(x, y + 7, S, 1);
-        break;
-
-      case 27: // Wooden Door
-        ctx.fillStyle = '#94a3b8'; // Wall frame
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#452610'; // Door wood
-        ctx.fillRect(x + 3, y + 2, 10, 14);
-        ctx.fillStyle = '#633919';
-        ctx.fillRect(x + 4, y + 3, 8, 12);
-        ctx.fillStyle = '#fbbf24'; // Brass knob
-        ctx.fillRect(x + 10, y + 9, 2, 2);
-        break;
-
-      case 28: // Window - Day (Sky reflection)
-        ctx.fillStyle = '#94a3b8';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#38bdf8';
-        ctx.fillRect(x + 4, y + 4, 8, 8);
-        ctx.fillStyle = '#1e293b'; // Cross frame
-        ctx.fillRect(x + 7, y + 4, 2, 8);
-        ctx.fillRect(x + 4, y + 7, 8, 2);
-        break;
-
-      case 29: // Window - Night Warm Glow
-        ctx.fillStyle = '#334155';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#f59e0b';
-        ctx.fillRect(x + 4, y + 4, 8, 8);
-        ctx.fillStyle = '#fef08a';
-        ctx.fillRect(x + 5, y + 5, 3, 3);
-        ctx.fillStyle = '#78350f';
-        ctx.fillRect(x + 7, y + 4, 2, 8);
-        ctx.fillRect(x + 4, y + 7, 8, 2);
-        break;
-
-      case 30: // Chimney
-        ctx.fillStyle = '#1e3a5f'; // Roof background
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#475569'; // Chimney brick
-        ctx.fillRect(x + 5, y + 2, 6, 12);
+        ctx.fillRect(x + 8, y, 1, 8);
+        ctx.fillRect(x + 5, y + 8, 1, 7);
         ctx.fillStyle = '#64748b';
-        ctx.fillRect(x + 4, y + 1, 8, 2);
-        ctx.fillStyle = '#e2e8f0'; // Smoke wisp
-        ctx.fillRect(x + 7, y, 2, 1);
+        ctx.fillRect(x + 1, y + 1, 6, 2);
+        ctx.fillRect(x + 6, y + 9, 7, 2);
         break;
 
-      // Vegetation & Nature (35-49)
-      case 35: // Oak Tree Canopy Top
-        ctx.fillStyle = '#4b8f3c'; // Grass bg
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#15803d'; // Tree canopy
-        ctx.beginPath();
-        ctx.arc(x + 8, y + 8, 7, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#22c55e'; // Highlight
-        ctx.beginPath();
-        ctx.arc(x + 7, y + 6, 4, 0, Math.PI * 2);
-        ctx.fill();
+      case 28: // Sturdy Arched Oak Door
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 2, y + 1, 12, 15);
+        ctx.fillStyle = '#8b5a2b';
+        ctx.fillRect(x + 3, y + 2, 10, 13);
+        // Arch trim
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x + 2, y, 12, 2);
+        // Iron studs & handle
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(x + 10, y + 8, 2, 2);
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 4, y + 4, 1, 1);
+        ctx.fillRect(x + 11, y + 4, 1, 1);
+        ctx.fillRect(x + 4, y + 12, 1, 1);
+        ctx.fillRect(x + 11, y + 12, 1, 1);
         break;
 
-      case 36: // Oak Tree Trunk / Base
-        ctx.fillStyle = '#4b8f3c';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#15803d'; // Canopy overlap top
-        ctx.fillRect(x + 2, y, 12, 5);
-        ctx.fillStyle = '#5c3619'; // Brown trunk
-        ctx.fillRect(x + 6, y + 5, 4, 9);
-        ctx.fillStyle = '#3a200d';
-        ctx.fillRect(x + 5, y + 12, 6, 3);
+      case 29: // Glazed Glass Window (Day - Sunlight Glass Reflection)
+        ctx.fillStyle = '#334155'; // Frame
+        ctx.fillRect(x + 3, y + 3, 10, 10);
+        ctx.fillStyle = '#38bdf8'; // Glass
+        ctx.fillRect(x + 4, y + 4, 8, 8);
+        ctx.fillStyle = '#f0f9ff'; // Reflection
+        ctx.fillRect(x + 5, y + 5, 2, 4);
+        ctx.fillRect(x + 8, y + 5, 2, 2);
+        // Window mullion cross
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 7, y + 4, 1, 8);
+        ctx.fillRect(x + 4, y + 7, 8, 1);
         break;
 
-      case 37: // Pine Tree Top (Mountain / Deepwood)
-        ctx.fillStyle = '#2a5e2c';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#064e3b';
-        ctx.beginPath();
-        ctx.moveTo(x + 8, y + 1);
-        ctx.lineTo(x + 14, y + 14);
-        ctx.lineTo(x + 2, y + 14);
-        ctx.closePath();
-        ctx.fill();
-        ctx.fillStyle = '#047857';
-        ctx.beginPath();
-        ctx.moveTo(x + 8, y + 3);
-        ctx.lineTo(x + 12, y + 12);
-        ctx.lineTo(x + 4, y + 12);
-        ctx.closePath();
-        ctx.fill();
+      case 30: // Lit Glass Window (Warm Hearth Glow)
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x + 3, y + 3, 10, 10);
+        ctx.fillStyle = '#ea580c';
+        ctx.fillRect(x + 4, y + 4, 8, 8);
+        ctx.fillStyle = '#fef08a'; // Golden glow
+        ctx.fillRect(x + 5, y + 5, 6, 6);
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 7, y + 4, 1, 8);
+        ctx.fillRect(x + 4, y + 7, 8, 1);
         break;
 
-      case 38: // Pine Tree Base
-        ctx.fillStyle = '#2a5e2c';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#064e3b';
-        ctx.fillRect(x + 3, y, 10, 6);
-        ctx.fillStyle = '#452610';
-        ctx.fillRect(x + 6, y + 6, 4, 8);
+      case 31: // Roof Eaves Border (Gable edge drop shadow)
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x, y, S, 4);
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(x, y + 4, S, 4);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(x, y + 8, S, S - 8);
         break;
 
-      case 39: // Wildflower Patch
-        ctx.fillStyle = '#4b8f3c';
+      case 32: // Roof Peak / Finial Ridge
+        ctx.fillStyle = '#778da9';
+        ctx.fillRect(x, y + 10, S, 4);
+        ctx.fillStyle = '#1b263b';
+        ctx.fillRect(x, y + 14, S, 2);
+        ctx.fillStyle = '#e0e1dd';
+        ctx.fillRect(x + 6, y + 3, 4, 8);
+        ctx.fillRect(x + 7, y + 1, 2, 2);
+        break;
+
+      case 33: // Brick Chimney with Smoke Puff
+        ctx.fillStyle = '#7f1d1d';
+        ctx.fillRect(x + 4, y + 5, 8, 11);
+        ctx.fillStyle = '#991b1b';
+        ctx.fillRect(x + 3, y + 4, 10, 2);
+        ctx.fillStyle = '#450a0a';
+        ctx.fillRect(x + 6, y + 8, 4, 1);
+        // Smoke puff
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(x + 6, y + 1, 4, 2);
+        ctx.fillRect(x + 8, y, 3, 2);
+        break;
+
+      case 34: // Striped Market Fabric Awning
+        ctx.fillStyle = '#dc2626'; // Red stripe
+        ctx.fillRect(x, y + 2, S, 10);
+        ctx.fillStyle = '#f8fafc'; // White stripe
+        ctx.fillRect(x + 4, y + 2, 4, 10);
+        ctx.fillRect(x + 12, y + 2, 4, 10);
+        ctx.fillStyle = '#991b1b';
+        ctx.fillRect(x, y + 12, S, 2);
+        break;
+
+      // -------------------------------------------------------------
+      // 35-49: Flora, Trees, Shrubs, Boulders, Props
+      // -------------------------------------------------------------
+      case 35: // Large Lush Oak Canopy Top (Volumetric multi-tone leaves)
+        ctx.fillStyle = '#1b4332';
+        ctx.fillRect(x + 1, y + 2, 14, 14);
+        ctx.fillStyle = '#2d6a4f';
+        ctx.fillRect(x + 2, y + 1, 12, 13);
+        ctx.fillStyle = '#40916c';
+        ctx.fillRect(x + 3, y + 2, 10, 10);
+        ctx.fillStyle = '#74c69d';
+        ctx.fillRect(x + 4, y + 3, 5, 4);
+        ctx.fillRect(x + 9, y + 6, 4, 4);
+        ctx.fillStyle = '#b7e4c7';
+        ctx.fillRect(x + 5, y + 4, 2, 2);
+        break;
+
+      case 36: // Large Oak Trunk Base (Gnarled oak trunk & roots)
+        ctx.fillStyle = '#1b4332'; // Under-canopy shadow
+        ctx.fillRect(x + 2, y, 12, 4);
+        // Trunk
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 5, y + 2, 6, 12);
+        ctx.fillStyle = '#784620';
+        ctx.fillRect(x + 6, y + 2, 4, 11);
+        ctx.fillStyle = '#3a200e';
+        ctx.fillRect(x + 5, y + 6, 1, 6);
+        ctx.fillRect(x + 10, y + 6, 1, 6);
+        // Roots spreading
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 3, y + 12, 3, 3);
+        ctx.fillRect(x + 10, y + 12, 3, 3);
+        // Moss patch
+        ctx.fillStyle = '#52b788';
+        ctx.fillRect(x + 6, y + 10, 2, 3);
+        break;
+
+      case 37: // Alpine Pine Tree Top (Sharp conical tiers)
+        ctx.fillStyle = '#081c15';
+        ctx.fillRect(x + 7, y + 1, 2, 2);
+        ctx.fillRect(x + 5, y + 3, 6, 4);
+        ctx.fillRect(x + 3, y + 7, 10, 5);
+        ctx.fillRect(x + 1, y + 12, 14, 4);
+        ctx.fillStyle = '#1b4332';
+        ctx.fillRect(x + 7, y + 1, 2, 1);
+        ctx.fillRect(x + 6, y + 3, 4, 3);
+        ctx.fillRect(x + 4, y + 7, 8, 4);
+        ctx.fillRect(x + 2, y + 12, 12, 3);
+        ctx.fillStyle = '#40916c';
+        ctx.fillRect(x + 7, y + 4, 2, 1);
+        ctx.fillRect(x + 5, y + 8, 3, 2);
+        ctx.fillRect(x + 3, y + 13, 4, 1);
+        break;
+
+      case 38: // Alpine Pine Trunk Base
+        ctx.fillStyle = '#081c15';
+        ctx.fillRect(x + 2, y, 12, 4);
+        ctx.fillStyle = '#45260f';
+        ctx.fillRect(x + 6, y + 2, 4, 12);
+        ctx.fillStyle = '#6b3a15';
+        ctx.fillRect(x + 7, y + 2, 2, 11);
+        // Fallen pine needles on grass
+        ctx.fillStyle = '#78350f';
+        ctx.fillRect(x + 4, y + 13, 8, 2);
+        break;
+
+      case 39: // Clustered Wildflowers (Poppies, Bluebells & Buttercups)
+        ctx.fillStyle = '#418a38';
         ctx.fillRect(x, y, S, S);
-        // Red, yellow, blue, white petals
+        // Red poppies
         ctx.fillStyle = '#ef4444';
-        ctx.fillRect(x + 3, y + 3, 2, 2);
-        ctx.fillStyle = '#facc15';
-        ctx.fillRect(x + 10, y + 4, 2, 2);
-        ctx.fillStyle = '#38bdf8';
-        ctx.fillRect(x + 4, y + 10, 2, 2);
-        ctx.fillStyle = '#f8fafc';
-        ctx.fillRect(x + 11, y + 11, 2, 2);
+        ctx.fillRect(x + 3, y + 4, 3, 3);
+        ctx.fillRect(x + 11, y + 9, 3, 3);
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(x + 4, y + 5, 1, 1);
+        ctx.fillRect(x + 12, y + 10, 1, 1);
+        // Bluebells
+        ctx.fillStyle = '#3b82f6';
+        ctx.fillRect(x + 10, y + 3, 2, 3);
+        ctx.fillRect(x + 4, y + 11, 2, 3);
+        ctx.fillStyle = '#93c5fd';
+        ctx.fillRect(x + 10, y + 3, 1, 1);
         break;
 
-      case 40: // Shrub / Bush
-        ctx.fillStyle = '#4b8f3c';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#166534';
-        ctx.beginPath();
-        ctx.arc(x + 8, y + 9, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#22c55e';
-        ctx.beginPath();
-        ctx.arc(x + 7, y + 7, 3, 0, Math.PI * 2);
-        ctx.fill();
+      case 40: // Dense Shrub / Berry Bush
+        ctx.fillStyle = '#1b4332';
+        ctx.fillRect(x + 2, y + 3, 12, 11);
+        ctx.fillStyle = '#2d6a4f';
+        ctx.fillRect(x + 3, y + 2, 10, 11);
+        ctx.fillStyle = '#52b788';
+        ctx.fillRect(x + 4, y + 4, 6, 5);
         // Red berries
         ctx.fillStyle = '#dc2626';
-        ctx.fillRect(x + 6, y + 8, 1, 1);
-        ctx.fillRect(x + 9, y + 10, 1, 1);
+        ctx.fillRect(x + 5, y + 6, 2, 2);
+        ctx.fillRect(x + 10, y + 5, 2, 2);
+        ctx.fillRect(x + 7, y + 10, 2, 2);
+        ctx.fillStyle = '#fca5a5';
+        ctx.fillRect(x + 5, y + 6, 1, 1);
         break;
 
-      case 41: // Fairy Ring / Glowing Mushroom
-        ctx.fillStyle = '#2a5e2c';
+      case 41: // Bioluminescent Glowing Mushroom (Deepwood Glow)
+        ctx.fillStyle = '#235229';
         ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#38bdf8'; // Glowing azure mushroom cap
-        ctx.beginPath();
-        ctx.arc(x + 8, y + 6, 4, Math.PI, 0);
-        ctx.fill();
+        // Cyan mushroom
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(x + 4, y + 4, 8, 5);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(x + 5, y + 3, 6, 4);
+        ctx.fillStyle = '#f0f9ff';
+        ctx.fillRect(x + 6, y + 4, 2, 2);
+        // Stalk
         ctx.fillStyle = '#e0f2fe';
-        ctx.fillRect(x + 7, y + 6, 2, 5);
-        // Spores
-        ctx.fillStyle = '#7dd3fc';
-        ctx.fillRect(x + 3, y + 10, 1, 1);
-        ctx.fillRect(x + 12, y + 4, 1, 1);
+        ctx.fillRect(x + 7, y + 9, 2, 4);
+        // Violet mini mushroom
+        ctx.fillStyle = '#9333ea';
+        ctx.fillRect(x + 11, y + 8, 4, 3);
+        ctx.fillStyle = '#c084fc';
+        ctx.fillRect(x + 12, y + 7, 2, 2);
+        ctx.fillStyle = '#f3e8ff';
+        ctx.fillRect(x + 12, y + 11, 1, 2);
         break;
 
-      case 42: // Small Boulder
-        ctx.fillStyle = '#4b8f3c';
-        ctx.fillRect(x, y, S, S);
+      case 42: // Mossy Highland Boulder
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x + 2, y + 3, 12, 11);
         ctx.fillStyle = '#64748b';
-        ctx.beginPath();
-        ctx.arc(x + 8, y + 9, 4, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.fillRect(x + 3, y + 2, 10, 10);
         ctx.fillStyle = '#94a3b8';
-        ctx.fillRect(x + 6, y + 7, 2, 2);
-        break;
-
-      case 43: // Large Mossy Boulder
-        ctx.fillStyle = '#4b8f3c';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#475569';
-        ctx.beginPath();
-        ctx.arc(x + 8, y + 8, 6, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#22c55e'; // Green moss
-        ctx.fillRect(x + 5, y + 4, 4, 3);
+        ctx.fillRect(x + 4, y + 3, 6, 4);
         ctx.fillStyle = '#1e293b';
-        ctx.fillRect(x + 4, y + 12, 8, 2);
+        ctx.fillRect(x + 4, y + 12, 9, 2);
+        // Lichen / Moss on stone
+        ctx.fillStyle = '#52b788';
+        ctx.fillRect(x + 4, y + 4, 4, 2);
+        ctx.fillRect(x + 8, y + 7, 3, 2);
         break;
 
-      // Props, POIs & Landmarks (50-70)
-      case 50: // Wooden Barrel
-        ctx.fillStyle = '#4b8f3c';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#78350f';
-        ctx.fillRect(x + 4, y + 3, 8, 10);
-        ctx.fillStyle = '#92400e';
-        ctx.fillRect(x + 5, y + 4, 6, 8);
-        ctx.fillStyle = '#451a03'; // Iron hoops
-        ctx.fillRect(x + 4, y + 5, 8, 1);
-        ctx.fillRect(x + 4, y + 10, 8, 1);
-        break;
-
-      case 51: // Wooden Crate
-        ctx.fillStyle = '#4b8f3c';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#854d0e';
-        ctx.fillRect(x + 3, y + 3, 10, 10);
-        ctx.fillStyle = '#a16207';
-        ctx.fillRect(x + 4, y + 4, 8, 8);
-        ctx.fillStyle = '#713f12'; // Diagonal cross
-        ctx.beginPath();
-        ctx.moveTo(x + 4, y + 4);
-        ctx.lineTo(x + 12, y + 12);
-        ctx.moveTo(x + 12, y + 4);
-        ctx.lineTo(x + 4, y + 12);
-        ctx.stroke();
-        break;
-
-      case 52: // Signpost
-        ctx.fillStyle = '#4b8f3c';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#5c3619'; // Post
-        ctx.fillRect(x + 7, y + 6, 2, 8);
-        ctx.fillStyle = '#b45309'; // Wooden sign board
-        ctx.fillRect(x + 3, y + 3, 10, 5);
-        ctx.fillStyle = '#451a03';
-        ctx.fillRect(x + 5, y + 5, 6, 1);
-        break;
-
-      case 53: // Lamp Post
-        ctx.fillStyle = '#64748b'; // Pavement base
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#1e293b'; // Cast iron post
-        ctx.fillRect(x + 7, y + 3, 2, 11);
-        ctx.fillStyle = '#fef08a'; // Golden lantern bulb
-        ctx.fillRect(x + 6, y + 2, 4, 4);
-        ctx.fillStyle = '#eab308';
-        ctx.strokeRect(x + 5.5, y + 1.5, 4, 4);
-        break;
-
-      case 54: // Stone Well
-        ctx.fillStyle = '#4b8f3c';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#64748b'; // Round stone rim
-        ctx.beginPath();
-        ctx.arc(x + 8, y + 9, 6, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#0284c7'; // Deep blue water inside
-        ctx.beginPath();
-        ctx.arc(x + 8, y + 9, 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#78350f'; // Wooden crossbeam
-        ctx.fillRect(x + 3, y + 2, 10, 2);
-        ctx.fillRect(x + 7, y + 4, 2, 3);
-        break;
-
-      case 55: // Treasure Chest - Closed
-        ctx.fillStyle = '#4b8f3c';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#854d0e';
-        ctx.fillRect(x + 3, y + 4, 10, 8);
-        ctx.fillStyle = '#eab308'; // Gold bands
-        ctx.fillRect(x + 3, y + 7, 10, 2);
-        ctx.fillRect(x + 7, y + 6, 2, 3);
-        break;
-
-      case 56: // Treasure Chest - Opened
-        ctx.fillStyle = '#4b8f3c';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#713f12';
-        ctx.fillRect(x + 3, y + 6, 10, 6);
-        ctx.fillStyle = '#451a03'; // Opened lid inside
-        ctx.fillRect(x + 3, y + 2, 10, 4);
-        ctx.fillStyle = '#facc15'; // Glowing gold coins inside
-        ctx.fillRect(x + 5, y + 6, 6, 3);
-        break;
-
-      case 57: // Ancient Runestone / Monolith
-        ctx.fillStyle = '#4b8f3c';
-        ctx.fillRect(x, y, S, S);
+      case 43: // Ancient Carved Standing Stone / Monolith
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 4, y + 1, 8, 14);
         ctx.fillStyle = '#475569';
-        ctx.fillRect(x + 4, y + 2, 8, 12);
+        ctx.fillRect(x + 5, y + 2, 6, 12);
         ctx.fillStyle = '#64748b';
-        ctx.fillRect(x + 5, y + 3, 6, 10);
-        ctx.fillStyle = '#38bdf8'; // Glowing runes
+        ctx.fillRect(x + 5, y + 2, 2, 12);
+        // Glowing Celtic Rune
+        ctx.fillStyle = '#38bdf8';
         ctx.fillRect(x + 7, y + 4, 2, 2);
-        ctx.fillRect(x + 6, y + 7, 4, 1);
-        ctx.fillRect(x + 7, y + 9, 2, 2);
+        ctx.fillRect(x + 7, y + 7, 3, 1);
+        ctx.fillRect(x + 8, y + 8, 1, 3);
+        ctx.fillRect(x + 7, y + 11, 2, 1);
         break;
 
-      case 58: // Shrine Pedestal
+      case 44: // Golden Birch Tree Top
+        ctx.fillStyle = '#713f12';
+        ctx.fillRect(x + 2, y + 2, 12, 13);
+        ctx.fillStyle = '#ca8a04';
+        ctx.fillRect(x + 3, y + 1, 10, 12);
+        ctx.fillStyle = '#eab308';
+        ctx.fillRect(x + 4, y + 2, 7, 6);
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(x + 5, y + 3, 3, 3);
+        break;
+
+      case 45: // Golden Birch Trunk Base (Iconic white bark with dark notches)
+        ctx.fillStyle = '#ca8a04';
+        ctx.fillRect(x + 3, y, 10, 3);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(x + 6, y + 2, 4, 12);
+        ctx.fillStyle = '#0f172a'; // Bark marks
+        ctx.fillRect(x + 6, y + 4, 2, 1);
+        ctx.fillRect(x + 8, y + 7, 2, 1);
+        ctx.fillRect(x + 6, y + 10, 3, 1);
+        break;
+
+      case 46: // Fallen Mossy Hollow Log
+        ctx.fillStyle = '#418a38';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#45260f';
+        ctx.fillRect(x + 1, y + 5, 14, 8);
+        ctx.fillStyle = '#6b3a15';
+        ctx.fillRect(x + 2, y + 6, 12, 6);
+        ctx.fillStyle = '#291406'; // Hollow interior
+        ctx.fillRect(x + 2, y + 7, 4, 4);
+        // Fern on top
+        ctx.fillStyle = '#74c69d';
+        ctx.fillRect(x + 8, y + 3, 4, 3);
+        ctx.fillStyle = '#40916c';
+        ctx.fillRect(x + 9, y + 4, 2, 2);
+        break;
+
+      case 47: // Rustic Post-and-Rail Wooden Fence
+        ctx.fillStyle = '#418a38';
+        ctx.fillRect(x, y, S, S);
+        // Wooden Posts
+        ctx.fillStyle = '#784620';
+        ctx.fillRect(x + 2, y + 2, 3, 12);
+        ctx.fillRect(x + 11, y + 2, 3, 12);
+        ctx.fillStyle = '#a16207';
+        ctx.fillRect(x + 3, y + 2, 1, 11);
+        ctx.fillRect(x + 12, y + 2, 1, 11);
+        // Horizontal Rails
+        ctx.fillStyle = '#784620';
+        ctx.fillRect(x, y + 4, S, 2);
+        ctx.fillRect(x, y + 9, S, 2);
+        ctx.fillStyle = '#ca8a04';
+        ctx.fillRect(x, y + 4, S, 1);
+        ctx.fillRect(x, y + 9, S, 1);
+        break;
+
+      case 48: // Mountain Scree & Jagged Slate Shards
         ctx.fillStyle = '#475569';
         ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#94a3b8'; // Stone pedestal
-        ctx.fillRect(x + 3, y + 7, 10, 7);
-        ctx.fillRect(x + 2, y + 12, 12, 3);
-        ctx.fillStyle = '#a855f7'; // Glowing purple relic
-        ctx.beginPath();
-        ctx.arc(x + 8, y + 4, 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#e9d5ff';
-        ctx.fillRect(x + 7, y + 3, 2, 2);
-        break;
-
-      case 59: // Cave / Dungeon Entrance
-        ctx.fillStyle = '#334155'; // Rock cliff surrounding
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#020617'; // Deep black portal arch
-        ctx.beginPath();
-        ctx.arc(x + 8, y + 8, 6, Math.PI, 0);
-        ctx.lineTo(x + 14, y + 16);
-        ctx.lineTo(x + 2, y + 16);
-        ctx.closePath();
-        ctx.fill();
-        ctx.fillStyle = '#38bdf8'; // Subtle mystic glimmer
-        ctx.fillRect(x + 7, y + 12, 2, 2);
-        break;
-
-      case 60: // Campfire
-        ctx.fillStyle = '#4b8f3c';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#334155'; // Firepit stones
-        ctx.beginPath();
-        ctx.arc(x + 8, y + 9, 6, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.fillStyle = '#ea580c'; // Fire flame
-        ctx.beginPath();
-        ctx.moveTo(x + 8, y + 4);
-        ctx.lineTo(x + 11, y + 11);
-        ctx.lineTo(x + 5, y + 11);
-        ctx.closePath();
-        ctx.fill();
-        ctx.fillStyle = '#fde047'; // Inner yellow flame
-        ctx.fillRect(x + 7, y + 7, 2, 3);
-        break;
-
-      case 61: // Market Stall Canopy (Red/White striped)
-        ctx.fillStyle = '#dc2626';
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#f8fafc';
-        ctx.fillRect(x + 4, y, 4, S);
-        ctx.fillRect(x + 12, y, 4, S);
-        ctx.fillStyle = '#991b1b';
-        ctx.fillRect(x, y + 14, S, 2);
-        break;
-
-      case 62: // Shipwreck Timber Rib
-        ctx.fillStyle = '#d6ba82'; // Sand
-        ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#452610'; // Broken weathered keel
-        ctx.beginPath();
-        ctx.moveTo(x + 2, y + 14);
-        ctx.lineTo(x + 14, y + 2);
-        ctx.lineTo(x + 12, y + 1);
-        ctx.lineTo(x + 1, y + 12);
-        ctx.closePath();
-        ctx.fill();
-        break;
-
-      case 63: // Clocktower Gear Ornament
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 2, y + 3, 4, 3);
+        ctx.fillRect(x + 8, y + 8, 5, 4);
+        ctx.fillRect(x + 11, y + 2, 3, 3);
         ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(x + 3, y + 3, 2, 1);
+        ctx.fillRect(x + 9, y + 8, 3, 1);
+        break;
+
+      case 49: // Coastal Tidal Pool with Sea Anemone
+        ctx.fillStyle = '#d9b675';
         ctx.fillRect(x, y, S, S);
-        ctx.fillStyle = '#d97706'; // Golden brass gear
-        ctx.beginPath();
-        ctx.arc(x + 8, y + 8, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#fef08a';
+        ctx.fillStyle = '#1b6785';
+        ctx.fillRect(x + 2, y + 2, 12, 12);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(x + 4, y + 4, 8, 8);
+        // Pink sea anemone
+        ctx.fillStyle = '#f43f5e';
+        ctx.fillRect(x + 6, y + 6, 4, 4);
+        ctx.fillStyle = '#fecdd3';
         ctx.fillRect(x + 7, y + 7, 2, 2);
         break;
 
-      default:
-        // Generic fallback checkerboard
-        ctx.fillStyle = (x + y) % 2 === 0 ? '#4a5568' : '#2d3748';
+      // -------------------------------------------------------------
+      // 50-79: Props, Landmarks, Interactables & Dungeons
+      // -------------------------------------------------------------
+      case 50: // Oak Trade Barrel
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 3, y + 2, 10, 12);
+        ctx.fillStyle = '#8b5a2b';
+        ctx.fillRect(x + 4, y + 3, 8, 10);
+        // Iron hoops
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 3, y + 4, 10, 1);
+        ctx.fillRect(x + 3, y + 11, 10, 1);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(x + 4, y + 4, 8, 1);
+        ctx.fillRect(x + 4, y + 11, 8, 1);
+        break;
+
+      case 51: // Wooden Cargo Crate
+        ctx.fillStyle = '#784620';
+        ctx.fillRect(x + 2, y + 2, 12, 12);
+        ctx.fillStyle = '#a16207';
+        ctx.fillRect(x + 3, y + 3, 10, 10);
+        // Diagonal cross
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 2, y + 2, 12, 1);
+        ctx.fillRect(x + 2, y + 13, 12, 1);
+        ctx.fillRect(x + 2, y + 2, 1, 12);
+        ctx.fillRect(x + 13, y + 2, 1, 12);
+        for (let i = 0; i < 10; i++) {
+          ctx.fillRect(x + 3 + i, y + 3 + i, 1, 1);
+          ctx.fillRect(x + 12 - i, y + 3 + i, 1, 1);
+        }
+        break;
+
+      case 52: // Golden Treasure Chest (Closed)
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 2, y + 4, 12, 10);
+        ctx.fillStyle = '#8b5a2b';
+        ctx.fillRect(x + 3, y + 5, 10, 8);
+        // Gold bands & lock
+        ctx.fillStyle = '#ca8a04';
+        ctx.fillRect(x + 2, y + 4, 12, 2);
+        ctx.fillRect(x + 2, y + 8, 12, 1);
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(x + 7, y + 8, 2, 3);
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 8, y + 9, 1, 1); // Keyhole
+        break;
+
+      case 53: // Classic Iron Street Lantern
+        // Base & Post
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 6, y + 8, 4, 8);
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x + 7, y + 2, 2, 12);
+        // Lantern head
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(x + 4, y + 2, 8, 2);
+        ctx.fillRect(x + 4, y + 7, 8, 1);
+        // Glowing flame inside
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(x + 5, y + 4, 6, 3);
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(x + 7, y + 5, 2, 2);
+        break;
+
+      case 54: // Stone Water Well
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x + 2, y + 6, 12, 9);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x + 3, y + 7, 10, 7);
+        // Water center
+        ctx.fillStyle = '#1b6785';
+        ctx.fillRect(x + 5, y + 8, 6, 4);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(x + 6, y + 9, 3, 2);
+        // Wooden frame & roof
+        ctx.fillStyle = '#784620';
+        ctx.fillRect(x + 3, y + 2, 2, 5);
+        ctx.fillRect(x + 11, y + 2, 2, 5);
+        ctx.fillRect(x + 2, y + 1, 12, 2);
+        break;
+
+      case 55: // Ornate Marble City Fountain
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(x + 1, y + 4, 14, 11);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(x + 2, y + 5, 12, 9);
+        // Splashing Water
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(x + 3, y + 6, 10, 7);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(x + 4, y + 7, 8, 5);
+        ctx.fillStyle = '#f0f9ff';
+        ctx.fillRect(x + 7, y + 2, 2, 6);
+        ctx.fillRect(x + 6, y + 3, 4, 2);
+        break;
+
+      case 56: // Wooden Directional Signpost
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 7, y + 6, 2, 10);
+        // Arrows
+        ctx.fillStyle = '#8b5a2b';
+        ctx.fillRect(x + 2, y + 2, 8, 3);
+        ctx.fillStyle = '#ca8a04';
+        ctx.fillRect(x + 2, y + 2, 7, 1);
+        ctx.fillStyle = '#8b5a2b';
+        ctx.fillRect(x + 6, y + 5, 8, 3);
+        ctx.fillStyle = '#ca8a04';
+        ctx.fillRect(x + 7, y + 5, 7, 1);
+        break;
+
+      case 57: // Opened Gleaming Treasure Chest
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 2, y + 6, 12, 8);
+        ctx.fillStyle = '#ca8a04';
+        ctx.fillRect(x + 2, y + 1, 12, 4); // Raised lid
+        // Gleaming gems & relics
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(x + 4, y + 6, 8, 4);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(x + 5, y + 7, 2, 2);
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(x + 9, y + 7, 2, 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x + 7, y + 5, 2, 2);
+        break;
+
+      case 58: // Campfire with Glowing Embers
+        ctx.fillStyle = '#334155'; // Stone circle
+        ctx.fillRect(x + 2, y + 5, 12, 9);
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 4, y + 6, 8, 7);
+        // Firewood
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 4, y + 9, 8, 2);
+        // Flame
+        ctx.fillStyle = '#dc2626';
+        ctx.fillRect(x + 5, y + 4, 6, 6);
+        ctx.fillStyle = '#ea580c';
+        ctx.fillRect(x + 6, y + 3, 4, 5);
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(x + 7, y + 2, 2, 4);
+        break;
+
+      case 59: // Market Stall (Blue/White Canopy)
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(x + 1, y + 1, 14, 6);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(x + 4, y + 1, 4, 6);
+        ctx.fillRect(x + 11, y + 1, 4, 6);
+        // Counter table
+        ctx.fillStyle = '#784620';
+        ctx.fillRect(x + 2, y + 7, 12, 7);
+        // Goods (Apples, Bread)
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(x + 3, y + 8, 3, 3);
+        ctx.fillStyle = '#ca8a04';
+        ctx.fillRect(x + 8, y + 8, 4, 3);
+        break;
+
+      case 60: // Market Stall (Red/Gold Canopy)
+        ctx.fillStyle = '#dc2626';
+        ctx.fillRect(x + 1, y + 1, 14, 6);
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(x + 4, y + 1, 4, 6);
+        ctx.fillRect(x + 11, y + 1, 4, 6);
+        ctx.fillStyle = '#784620';
+        ctx.fillRect(x + 2, y + 7, 12, 7);
+        // Spices & Potions
+        ctx.fillStyle = '#8b5cf6';
+        ctx.fillRect(x + 4, y + 8, 2, 3);
+        ctx.fillStyle = '#10b981';
+        ctx.fillRect(x + 9, y + 8, 2, 3);
+        break;
+
+      case 61: // Blacksmith Anvil & Glowing Forge Basin
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 2, y + 6, 12, 8);
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(x + 4, y + 3, 8, 4);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(x + 3, y + 3, 10, 2);
+        // Glowing hot iron
+        ctx.fillStyle = '#ea580c';
+        ctx.fillRect(x + 6, y + 2, 4, 2);
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(x + 7, y + 2, 2, 1);
+        break;
+
+      case 62: // Weapon Rack (Swords, Spears, Shields)
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 2, y + 3, 12, 11);
+        ctx.fillStyle = '#784620';
+        ctx.fillRect(x + 3, y + 4, 10, 9);
+        // Steel Blades
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(x + 4, y + 2, 1, 11);
+        ctx.fillRect(x + 7, y + 1, 1, 12);
+        ctx.fillRect(x + 10, y + 2, 1, 11);
+        ctx.fillStyle = '#dc2626'; // Shield trim
+        ctx.fillRect(x + 5, y + 7, 5, 5);
+        break;
+
+      case 63: // Great Clocktower Celestial Dial (Crownport Monument)
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 1, y + 1, 14, 14);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(x + 2, y + 2, 12, 12);
+        // Brass celestial ring
+        ctx.fillStyle = '#ca8a04';
+        ctx.fillRect(x + 3, y + 3, 10, 10);
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(x + 4, y + 4, 8, 8);
+        // Clock Hands
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(x + 7, y + 5, 2, 4);
+        ctx.fillRect(x + 7, y + 7, 4, 2);
+        ctx.fillStyle = '#ef4444'; // Center jewel
+        ctx.fillRect(x + 7, y + 7, 2, 2);
+        break;
+
+      case 64: // Ancient Beacon Lighthouse Fresnel Crystal
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(x + 2, y + 2, 12, 12);
+        // Brilliant Radiating Crystal
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(x + 4, y + 4, 8, 8);
+        ctx.fillStyle = '#f0f9ff';
+        ctx.fillRect(x + 5, y + 5, 6, 6);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x + 7, y + 6, 2, 4);
+        ctx.fillRect(x + 6, y + 7, 4, 2);
+        break;
+
+      case 65: // Ancient Crypt Verdigris Bronze Portcullis
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 1, y + 1, 14, 15);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(x + 2, y + 3, 12, 13);
+        // Verdigris bronze bars
+        ctx.fillStyle = '#0d9488';
+        ctx.fillRect(x + 4, y + 3, 1, 13);
+        ctx.fillRect(x + 7, y + 3, 2, 13);
+        ctx.fillRect(x + 11, y + 3, 1, 13);
+        ctx.fillRect(x + 2, y + 7, 12, 2);
+        ctx.fillRect(x + 2, y + 12, 12, 2);
+        break;
+
+      case 66: // Cavern Mine Archway (Timber Shored Shaft)
+        ctx.fillStyle = '#0f172a'; // Pitch black cave
+        ctx.fillRect(x + 1, y + 1, 14, 15);
+        // Sturdy timber frame
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 2, y + 1, 12, 3);
+        ctx.fillRect(x + 2, y + 1, 3, 15);
+        ctx.fillRect(x + 11, y + 1, 3, 15);
+        ctx.fillStyle = '#8b5a2b';
+        ctx.fillRect(x + 3, y + 2, 10, 1);
+        // Lantern hanging on post
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(x + 12, y + 5, 2, 3);
+        break;
+
+      case 67: // Weathered Ship Anchor & Dockside Ropes
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x + 3, y + 3, 10, 10);
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 7, y + 3, 2, 8);
+        ctx.fillRect(x + 4, y + 9, 8, 2);
+        ctx.fillRect(x + 3, y + 7, 2, 3);
+        ctx.fillRect(x + 11, y + 7, 2, 3);
+        // Rope coils
+        ctx.fillStyle = '#ca8a04';
+        ctx.fillRect(x + 8, y + 9, 5, 4);
+        break;
+
+      case 68: // Planter Flower Box (Window or roadside)
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 2, y + 7, 12, 7);
+        ctx.fillStyle = '#784620';
+        ctx.fillRect(x + 3, y + 8, 10, 5);
+        // Blooming Petunias
+        ctx.fillStyle = '#ec4899';
+        ctx.fillRect(x + 3, y + 4, 3, 3);
+        ctx.fillStyle = '#a855f7';
+        ctx.fillRect(x + 7, y + 3, 3, 3);
+        ctx.fillStyle = '#eab308';
+        ctx.fillRect(x + 11, y + 4, 3, 3);
+        break;
+
+      case 69: // Limestone Park Bench
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x + 2, y + 5, 12, 8);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(x + 2, y + 4, 12, 3); // Seat
+        ctx.fillRect(x + 3, y + 1, 10, 2); // Backrest
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x + 3, y + 7, 2, 6); // Legs
+        ctx.fillRect(x + 11, y + 7, 2, 6);
+        break;
+
+      case 70: // Weathered Stone Gravestone
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(x + 4, y + 3, 8, 11);
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x + 5, y + 2, 6, 11);
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 7, y + 4, 2, 6); // Cross
+        ctx.fillRect(x + 6, y + 6, 4, 2);
+        break;
+
+      case 71: // Magic Warp Sigil (Glowing Blue Circle)
+        ctx.fillStyle = '#0369a1';
+        ctx.fillRect(x + 1, y + 1, 14, 14);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(x + 3, y + 3, 10, 10);
+        ctx.fillStyle = '#f0f9ff';
+        ctx.fillRect(x + 5, y + 5, 6, 6);
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(x + 7, y + 2, 2, 12);
+        ctx.fillRect(x + 2, y + 7, 12, 2);
+        break;
+
+      case 72: // Kelp Drying Rack (Tidebreak Coastal Prop)
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 2, y + 2, 2, 12);
+        ctx.fillRect(x + 12, y + 2, 2, 12);
+        ctx.fillRect(x + 2, y + 3, 12, 2);
+        // Hanging kelp
+        ctx.fillStyle = '#14532d';
+        ctx.fillRect(x + 4, y + 4, 2, 9);
+        ctx.fillRect(x + 7, y + 4, 2, 10);
+        ctx.fillRect(x + 10, y + 4, 2, 8);
+        break;
+
+      case 73: // Mountain Smelter Furnace Base (Molten Glow)
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 1, y + 1, 14, 15);
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x + 2, y + 2, 12, 13);
+        // Molten Ore Glow
+        ctx.fillStyle = '#ea580c';
+        ctx.fillRect(x + 4, y + 6, 8, 7);
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(x + 5, y + 7, 6, 5);
+        break;
+
+      case 74: // Rope Gorge Suspension Cable Anchor
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x + 3, y + 4, 10, 10);
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(x + 5, y + 2, 6, 6);
+        // Heavy Cable
+        ctx.fillStyle = '#ca8a04';
+        ctx.fillRect(x, y + 7, S, 2);
+        break;
+
+      case 75: // Ancient Knight Statue on Pedestal
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(x + 2, y + 10, 12, 5); // Pedestal
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x + 4, y + 3, 8, 8); // Armor
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(x + 6, y + 1, 4, 4); // Helmet
+        // Sword plunging down
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(x + 7, y + 4, 2, 8);
+        ctx.fillRect(x + 5, y + 5, 6, 1);
+        break;
+
+      case 76: // Amethyst Crystal Cluster
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(x + 3, y + 6, 10, 8);
+        // Crystals
+        ctx.fillStyle = '#7e22ce';
+        ctx.fillRect(x + 5, y + 2, 4, 8);
+        ctx.fillRect(x + 9, y + 4, 3, 7);
+        ctx.fillStyle = '#c084fc';
+        ctx.fillRect(x + 6, y + 2, 2, 6);
+        ctx.fillRect(x + 10, y + 4, 1, 5);
+        ctx.fillStyle = '#f3e8ff';
+        ctx.fillRect(x + 6, y + 2, 1, 2);
+        break;
+
+      case 77: // Sunken Skiff Hull Wreckage
+        ctx.fillStyle = '#1b6785';
         ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#5c3a1e';
+        ctx.fillRect(x + 2, y + 4, 12, 8);
+        ctx.fillStyle = '#3a200e';
+        ctx.fillRect(x + 4, y + 6, 8, 4);
+        // Barnacles & Green algae
+        ctx.fillStyle = '#10b981';
+        ctx.fillRect(x + 3, y + 5, 2, 2);
+        ctx.fillRect(x + 10, y + 9, 3, 2);
+        break;
+
+      case 78: // Fairy Mushroom Ring
+        ctx.fillStyle = '#235229';
+        ctx.fillRect(x, y, S, S);
+        // Small luminous mushrooms in circle
+        const ring = [
+          [x + 4, y + 3], [x + 11, y + 3],
+          [x + 2, y + 8], [x + 13, y + 8],
+          [x + 4, y + 13], [x + 11, y + 13]
+        ];
+        ctx.fillStyle = '#38bdf8';
+        for (const [mx, my] of ring) {
+          ctx.fillRect(mx, my, 2, 2);
+        }
+        ctx.fillStyle = '#f0f9ff';
+        for (const [mx, my] of ring) {
+          ctx.fillRect(mx, my, 1, 1);
+        }
+        break;
+
+      case 79: // Submerged Wooden Stilt Post (Pier Support)
+        ctx.fillStyle = '#1b6785';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#45260f';
+        ctx.fillRect(x + 5, y, 6, 16);
+        ctx.fillStyle = '#6b3a15';
+        ctx.fillRect(x + 6, y, 4, 16);
+        // Water ripples around post
+        ctx.fillStyle = '#4cc9f0';
+        ctx.fillRect(x + 3, y + 8, 2, 1);
+        ctx.fillRect(x + 11, y + 8, 2, 1);
+        ctx.fillRect(x + 2, y + 12, 3, 1);
+        ctx.fillRect(x + 11, y + 12, 3, 1);
+        break;
+
+      default:
+        // Generic fallback grid
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x, y, S, S);
+        ctx.fillStyle = '#475569';
+        ctx.strokeRect(x + 0.5, y + 0.5, S - 1, S - 1);
         break;
     }
   }
 
   /**
-   * Draws a single 16x16 humanoid character frame
+   * Procedural Character Sprite Drawer
    */
   private static drawCharacterSprite(
     ctx: CanvasRenderingContext2D,
     x: number,
     y: number,
-    dir: number, // 0: Down, 1: Left, 2: Right, 3: Up
-    frame: number, // 0: Idle/Step1, 1: Walk1, 2: Walk2
-    palette: string[] // [hair, skin, tunic, pants]
+    dir: number,
+    frame: number,
+    palette: string[]
   ): void {
-    const [hair, skin, tunic, pants] = palette;
+    const [hairColor, skinColor, tunicColor, pantsColor, accentColor] = palette;
 
-    // Head / Face
-    ctx.fillStyle = skin;
-    ctx.fillRect(x + 5, y + 2, 6, 5);
+    // Bobbing offset for walking animation
+    const bob = frame === 1 ? 0 : -1;
+    const legOffset = frame === 0 ? -1 : frame === 2 ? 1 : 0;
 
-    // Hair
-    ctx.fillStyle = hair;
-    if (dir === 3) {
-      // Facing Up (Back of head)
-      ctx.fillRect(x + 4, y + 1, 8, 6);
-    } else {
-      ctx.fillRect(x + 4, y + 1, 8, 3);
-      ctx.fillRect(x + 4, y + 4, 1, 3);
-      ctx.fillRect(x + 11, y + 4, 1, 3);
+    // 1. Shadow underneath
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
+    ctx.beginPath();
+    ctx.ellipse(x + 8, y + 15, 5, 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. Legs / Boots
+    ctx.fillStyle = pantsColor;
+    if (dir === 0 || dir === 3) { // Facing Down or Up
+      ctx.fillRect(x + 5 + legOffset, y + 12 + bob, 2, 3);
+      ctx.fillRect(x + 9 - legOffset, y + 12 + bob, 2, 3);
+    } else { // Facing Side
+      ctx.fillRect(x + 6 + legOffset, y + 12 + bob, 4, 3);
     }
 
-    // Eyes
+    // 3. Tunic / Body
+    ctx.fillStyle = tunicColor;
+    ctx.fillRect(x + 4, y + 6 + bob, 8, 6);
+    // Accent trim / belt
+    ctx.fillStyle = accentColor;
+    ctx.fillRect(x + 4, y + 10 + bob, 8, 1);
+    ctx.fillStyle = '#ca8a04'; // Buckle
+    ctx.fillRect(x + 7, y + 10 + bob, 2, 1);
+
+    // 4. Head & Face
+    ctx.fillStyle = skinColor;
+    ctx.fillRect(x + 5, y + 2 + bob, 6, 5);
+
+    // 5. Hair & Eyes based on direction
+    ctx.fillStyle = hairColor;
     if (dir === 0) { // Facing Down
+      ctx.fillRect(x + 4, y + 1 + bob, 8, 3);
+      ctx.fillRect(x + 4, y + 3 + bob, 1, 3);
+      ctx.fillRect(x + 11, y + 3 + bob, 1, 3);
+      // Eyes
       ctx.fillStyle = '#0f172a';
-      ctx.fillRect(x + 6, y + 4, 1, 1);
-      ctx.fillRect(x + 9, y + 4, 1, 1);
-    } else if (dir === 1) { // Left
+      ctx.fillRect(x + 6, y + 4 + bob, 1, 2);
+      ctx.fillRect(x + 9, y + 4 + bob, 1, 2);
+    } else if (dir === 1) { // Facing Left
+      ctx.fillRect(x + 5, y + 1 + bob, 7, 3);
+      ctx.fillRect(x + 10, y + 3 + bob, 2, 4);
       ctx.fillStyle = '#0f172a';
-      ctx.fillRect(x + 5, y + 4, 1, 1);
-    } else if (dir === 2) { // Right
+      ctx.fillRect(x + 6, y + 4 + bob, 1, 2);
+    } else if (dir === 2) { // Facing Right
+      ctx.fillRect(x + 4, y + 1 + bob, 7, 3);
+      ctx.fillRect(x + 4, y + 3 + bob, 2, 4);
       ctx.fillStyle = '#0f172a';
-      ctx.fillRect(x + 10, y + 4, 1, 1);
-    }
-
-    // Body / Tunic
-    ctx.fillStyle = tunic;
-    ctx.fillRect(x + 5, y + 7, 6, 5);
-
-    // Arms
-    ctx.fillStyle = skin;
-    if (dir === 1) {
-      ctx.fillRect(x + 4, y + 8, 2, 3);
-    } else if (dir === 2) {
-      ctx.fillRect(x + 10, y + 8, 2, 3);
-    } else {
-      ctx.fillRect(x + 3, y + 8, 2, 3);
-      ctx.fillRect(x + 11, y + 8, 2, 3);
-    }
-
-    // Legs / Pants & Walk animation offset
-    ctx.fillStyle = pants;
-    const legOffset = frame === 1 ? -1 : (frame === 2 ? 1 : 0);
-
-    if (dir === 1 || dir === 2) {
-      // Side walk
-      ctx.fillRect(x + 6 + legOffset, y + 12, 4, 4);
-    } else {
-      // Down or Up walk
-      ctx.fillRect(x + 5, y + 12 + (frame === 1 ? -1 : 0), 2, 4);
-      ctx.fillRect(x + 9, y + 12 + (frame === 2 ? -1 : 0), 2, 4);
+      ctx.fillRect(x + 9, y + 4 + bob, 1, 2);
+    } else if (dir === 3) { // Facing Up (Back of head)
+      ctx.fillRect(x + 4, y + 1 + bob, 8, 6);
     }
   }
 }

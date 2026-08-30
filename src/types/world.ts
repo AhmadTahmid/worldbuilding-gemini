@@ -66,6 +66,22 @@ export interface WorldNode {
   description: string;
 }
 
+export type SettlementPattern =
+  | 'grid_urban'
+  | 'radial_green'
+  | 'linear_pier'
+  | 'terrace_mountain';
+
+export type DistrictType =
+  | 'civic'
+  | 'market'
+  | 'docks'
+  | 'residential'
+  | 'craft'
+  | 'farming'
+  | 'harbor'
+  | 'temple';
+
 export interface WorldEdge {
   id: string;
   fromNodeId: string;
@@ -74,6 +90,7 @@ export interface WorldEdge {
   name: string;
   points?: Point[];
   isSecret?: boolean;
+  beats?: string[];
 }
 
 export interface WorldGraph {
@@ -104,6 +121,9 @@ export interface Settlement {
   economy: string[];
   mood: string;
   architectureStyle: 'grand_stone' | 'timber_thatch' | 'coastal_wood' | 'slate_crag';
+  settlementPattern?: SettlementPattern;
+  districts?: DistrictType[];
+  surroundingLandUse?: string[];
   landmarks: string[];
   loreSummary: string;
 }

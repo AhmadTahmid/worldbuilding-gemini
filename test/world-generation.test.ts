@@ -36,6 +36,7 @@ describe('Aethelgard World Generation & Integrity Suite', () => {
     expect(res1.map.npcs.length).toBe(res2.map.npcs.length);
     expect(res1.map.pois.length).toBe(res2.map.pois.length);
     expect(res1.map.layers.ground[100][100]).toBe(res2.map.layers.ground[100][100]);
+    expect(res1.map.layers.lowerObjects[110][180]).toBe(res2.map.layers.lowerObjects[110][180]);
   }, 15000);
 
   it('should contain 1 grand city, 3 towns/villages, 30+ NPCs, 15+ POIs, 10+ secrets', () => {
@@ -49,5 +50,24 @@ describe('Aethelgard World Generation & Integrity Suite', () => {
   it('should guarantee 100% reachability of all major locations from spawn', () => {
     const result = WorldCompiler.compile(baseSpec, bibleData);
     expect(result.validation.stats.reachableMajorLocations).toBe(result.validation.stats.totalMajorLocations);
+  });
+
+  it('should generate valid worlds across alternate seeds', () => {
+    const altSeeds = ['Highland-Epoch-77', 'Mistfall-Oasis-902'];
+    for (const seed of altSeeds) {
+      const spec: WorldSpec = { ...baseSpec, seed };
+      const res = WorldCompiler.compile(spec, bibleData);
+      expect(res.validation.isValid).toBe(true);
+      expect(res.validation.stats.reachableMajorLocations).toBe(res.validation.stats.totalMajorLocations);
+    }
+  }, 20000);
+
+  it('should generate settlements with rich morphology, roofs, doors, and district infrastructure', () => {
+    const result = WorldCompiler.compile(baseSpec, bibleData);
+    // Crownport Clocktower plaza check (180, 110)
+    expect(result.map.layers.terrain[110][180]).toBe(8); // Cobblestone pavement
+    // Oakhaven Elder Oak check (80, 125)
+    expect(result.map.layers.lowerObjects[125][80]).toBe(36); // Oak trunk
+    expect(result.map.layers.upperObjects[124][80]).toBe(35); // Oak canopy
   });
 });

@@ -1,5 +1,6 @@
 import { WorldSpec, BiomeType } from '@/types/world';
 import { SeedRandom } from './SeedRandom';
+import { EnvironmentGrammar } from './EnvironmentGrammar';
 
 export interface TerrainData {
   width: number;
@@ -15,6 +16,11 @@ export interface TerrainData {
   riverMap: boolean[][];
 }
 
+/**
+ * TerrainGenerator.ts
+ * Generates continuous elevation fields, river networks, biome classification,
+ * autotiled terrain transitions, and delegates flora/scenery synthesis to EnvironmentGrammar.
+ */
 export class TerrainGenerator {
   public static generate(spec: WorldSpec, rng: SeedRandom): TerrainData {
     const W = spec.widthTiles;
@@ -37,7 +43,6 @@ export class TerrainGenerator {
         const rawElev = rng.fbmNoise2D(x, y, 0.015, 4, 2.0, 0.5);
         const detailElev = rng.fbmNoise2D(x, y, 0.05, 2, 2.0, 0.4);
 
-        // Distance / Continental gradient:
         // Mountain peak bias at North-East (x: 210, y: 40)
         const distToPeak = Math.hypot((x - 210) / W, (y - 40) / H);
         const mountainBias = Math.max(0, 1.0 - distToPeak * 1.6);
@@ -56,15 +61,13 @@ export class TerrainGenerator {
       }
     }
 
-    // 2. Trace Continuous River Network from Mountain to Ocean
-    // River starts near (200, 45), meanders southwest past Oakhaven (80, 125) to South Coast (95, 220)
+    // 2. Trace Continuous River Network from Mountain Lake to Ocean Bay
     let rx = 195;
     let ry = 48;
     const riverPoints: [number, number][] = [];
 
     while (rx > 30 && ry < H - 20) {
       riverPoints.push([Math.round(rx), Math.round(ry)]);
-      // Meander slightly
       const stepNoise = rng.fbmNoise2D(rx, ry, 0.1, 2) - 0.5;
       rx -= 0.6 + stepNoise * 0.4;
       ry += 0.9;
@@ -137,81 +140,53 @@ export class TerrainGenerator {
     }
 
     // 4. Generate Natural Mountain Cliffs & Elevation Borders
-    for (let y = 1; y < H - 1; y++) {
+    for (let y = 1; y < H - 2; y++) {
       for (let x = 1; x < W - 1; x++) {
         const elev = elevation[y][x];
         const elevBelow = elevation[y + 1][x];
 
         if (elev >= 0.72 && elevBelow < 0.72 && groundTiles[y + 1][x] !== 1 && groundTiles[y + 1][x] !== 2) {
-          // Cliff face line
-          terrainTiles[y][x] = 10; // Cliff Top
+          terrainTiles[y][x] = 10; // Cliff Top Edge
           terrainTiles[y + 1][x] = 11; // Cliff Wall Center
-          collision[y + 1][x] = true; // Cliff is impassable
+          terrainTiles[y + 2][x] = 12; // Cliff Base Scree
+          collision[y + 1][x] = true;  // Cliff Wall is impassable
         }
       }
     }
 
-    // 5. Scatter Natural Biome Flora & Scenery Props
-    for (let y = 2; y < H - 2; y++) {
-      for (let x = 2; x < W - 2; x++) {
-        // Skip water, cliffs, and roads
-        if (collision[y][x] || terrainTiles[y][x] !== 0) continue;
+    // 5. Generate Shoreline Transitions & Foam Edges
+    for (let y = 1; y < H - 1; y++) {
+      for (let x = 1; x < W - 1; x++) {
+        // If this tile is shallow water (2) adjacent to sand (4) or grass (5)
+        if (groundTiles[y][x] === 2) {
+          const hasLandNeighbor =
+            groundTiles[y - 1][x] >= 4 ||
+            groundTiles[y + 1][x] >= 4 ||
+            groundTiles[y][x - 1] >= 4 ||
+            groundTiles[y][x + 1] >= 4;
 
-        const biome = biomes[y][x];
-        const roll = rng.next();
-
-        if (biome === 'deepwood') {
-          // Dense Pine Trees & Fairy Spores
-          if (roll < 0.18) {
-            // Pine Tree (Canopy top in upperObjects, Trunk in lowerObjects with collision)
-            upperObjectTiles[y - 1][x] = 37; // Pine Top
-            lowerObjectTiles[y][x] = 38; // Pine Trunk
-            collision[y][x] = true;
-          } else if (roll < 0.24) {
-            lowerObjectTiles[y][x] = 41; // Glowing Mushroom
-          } else if (roll < 0.28) {
-            lowerObjectTiles[y][x] = 43; // Mossy Boulder
-            collision[y][x] = true;
-          }
-        } else if (biome === 'forest') {
-          // Oak Trees, Bushes, Wildflowers
-          if (roll < 0.14) {
-            upperObjectTiles[y - 1][x] = 35; // Oak Canopy
-            lowerObjectTiles[y][x] = 36; // Oak Trunk
-            collision[y][x] = true;
-          } else if (roll < 0.19) {
-            lowerObjectTiles[y][x] = 40; // Shrub
-          } else if (roll < 0.25) {
-            lowerObjectTiles[y][x] = 39; // Wildflowers
-          }
-        } else if (biome === 'mountain') {
-          // Boulders, Sparsely scattered alpine pines
-          if (roll < 0.08) {
-            upperObjectTiles[y - 1][x] = 37;
-            lowerObjectTiles[y][x] = 38;
-            collision[y][x] = true;
-          } else if (roll < 0.15) {
-            lowerObjectTiles[y][x] = 42; // Boulder
-            collision[y][x] = true;
-          }
-        } else if (biome === 'grassland') {
-          // Occasional Oak tree, wildflowers
-          if (roll < 0.04) {
-            upperObjectTiles[y - 1][x] = 35;
-            lowerObjectTiles[y][x] = 36;
-            collision[y][x] = true;
-          } else if (roll < 0.12) {
-            lowerObjectTiles[y][x] = 39; // Wildflowers
-          } else if (roll < 0.15) {
-            lowerObjectTiles[y][x] = 40; // Shrub
-          }
-        } else if (biome === 'beach') {
-          if (roll < 0.03) {
-            lowerObjectTiles[y][x] = 42; // Small rock
+          if (hasLandNeighbor && terrainTiles[y][x] === 0) {
+            terrainTiles[y][x] = 3; // Water Foam / Shoreline Crest
           }
         }
       }
     }
+
+    // 6. Apply Structured Spatial Environment Grammars
+    EnvironmentGrammar.apply(
+      spec,
+      biomes,
+      elevation,
+      moisture,
+      {
+        groundTiles,
+        terrainTiles,
+        lowerObjectTiles,
+        upperObjectTiles,
+        collision,
+      },
+      rng
+    );
 
     return {
       width: W,

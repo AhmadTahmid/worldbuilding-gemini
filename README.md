@@ -115,7 +115,7 @@ e:/WorldBuilding Gemini/
 │   ├── game/
 │   │   ├── assets/
 │   │   │   ├── SoundFX.ts            # Web Audio API sound synthesizer
-│   │   │   └── TileAtlasGenerator.ts # Procedural 16x16 pixel-art atlas & character generator
+│   │   │   └── TileAtlasGenerator.ts # Rich 16x16 pixel-art atlas & character generator with autotiling
 │   │   ├── scenes/
 │   │   │   ├── BootScene.ts          # Preloads textures, creates animations, loads world data
 │   │   │   └── WorldScene.ts         # Main Phaser game scene (rendering, movement, camera, weather)
@@ -125,15 +125,17 @@ e:/WorldBuilding Gemini/
 │   │   │   └── UIManager.ts          # Dialogue, World Map, Codex Journal, & Debug HUD
 │   │   └── GameApp.ts                # Phaser 3 Game bootstrap
 │   ├── types/
-│   │   └── world.ts                  # TypeScript schemas and Zod validators
+│   │   └── world.ts                  # TypeScript schemas and Zod validators (Districts, Morphology)
 │   ├── world/
 │   │   └── generator/
 │   │       ├── SeedRandom.ts             # Deterministic PRNG & Simplex FBM noise
 │   │       ├── WorldGraphGenerator.ts    # Macro topological graph & connectivity
-│   │       ├── TerrainGenerator.ts       # Elevation, biomes, rivers, and cliffs
-│   │       ├── RouteCarver.ts            # A* path carver with bridges and roads
-│   │       ├── SettlementSynthesizer.ts  # City and village architecture synthesizer
-│   │       ├── POIGenerator.ts           # POIs and visual secret placement
+│   │       ├── TerrainGenerator.ts       # Elevation, biomes, rivers, autotile foam shorelines
+│   │       ├── EnvironmentGrammar.ts     # Spatial density fields, canopy clusters & clearings
+│   │       ├── RouteCarver.ts            # A* path carver with bridges and milestone signposts
+│   │       ├── SettlementMorphology.ts   # Generic rule-driven district settlement synthesis
+│   │       ├── SettlementSynthesizer.ts  # Settlement compilation coordinator
+│   │       ├── POIGenerator.ts           # 17 POIs and 10 visual secrets
 │   │       ├── NPCNarrativeGenerator.ts  # 32 NPCs, gossip networks, and dialogue trees
 │   │       ├── WorldCompiler.ts          # Compiles semantic data into layered tilemap
 │   │       └── WorldValidator.ts         # Graph reachability & integrity validation
@@ -141,6 +143,7 @@ e:/WorldBuilding Gemini/
 │   └── style.css
 ├── test/
 │   └── world-generation.test.ts  # Vitest test suite
+├── HANDOFF.md                    # Milestone 2 inspection and handoff report
 ├── ARCHITECTURE.md               # Detailed architectural specification
 ├── WORLD_GENERATION.md           # Pipeline explanation & future LLM authoring hooks
 └── ASSETS.md                     # 100% CC0 public domain provenance documentation
