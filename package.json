@@ -1,0 +1,38 @@
+{
+  "name": "procedural-jrpg-world",
+  "version": "1.0.0",
+  "description": "Experimental browser-based procedural JRPG exploration game",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "world:generate": "tsx scripts/generate-world.ts",
+    "world:validate": "tsx scripts/validate-world.ts",
+    "world:inspect": "tsx scripts/inspect-world.ts",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "jrpg",
+    "phaser",
+    "procedural-generation",
+    "worldbuilding",
+    "typescript"
+  ],
+  "author": "Antigravity Agent",
+  "license": "MIT",
+  "dependencies": {
+    "phaser": "^3.90.0",
+    "seedrandom": "^3.0.5",
+    "simplex-noise": "^4.0.3",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/seedrandom": "^3.0.8",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.1",
+    "vitest": "^3.0.8"
+  }
+}

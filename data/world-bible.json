@@ -1,0 +1,342 @@
+{
+  "worldName": "Aethelgard",
+  "era": "The Fourth Century of the Calmed Seas",
+  "historySummary": "A century after the Great Eclipse Tide receded, the realm of Aethelgard has entered an age of rediscovery. Ancient trade routes carved by the first coastal kings are being reclaimed from overgrown forests and misty mountain passes. While the grand maritime port of Crownport prospers, forgotten ruins, drowned crypts, and secretive guilds keep the land's deepest enigmas alive.",
+  "regions": [
+    {
+      "id": "region_crownport",
+      "name": "Crownport",
+      "subtitle": "The Gilded Haven of the Grand Bay",
+      "biome": "city",
+      "bounds": { "x": 140, "y": 80, "width": 80, "height": 60 },
+      "colorHex": "#d97706",
+      "ambientWeather": "clear",
+      "loreSummary": "The commercial heartbeat of Aethelgard. Crownport is renowned for its cobblestone esplanades, bustling markets, clocktower square, and the fortified Admiralty of the Tideguard."
+    },
+    {
+      "id": "region_oakhaven",
+      "name": "Oakhaven & The Whispering Weald",
+      "subtitle": "The Emerald Heart of the Old Timber",
+      "biome": "forest",
+      "bounds": { "x": 40, "y": 90, "width": 80, "height": 70 },
+      "colorHex": "#16a34a",
+      "ambientWeather": "forest_leaves",
+      "loreSummary": "A tranquil timber-built sanctuary nestled among colossal oak trees. Its herbalists and rangers revere the silence of the woods and protect ancient stone shrines."
+    },
+    {
+      "id": "region_tidebreak",
+      "name": "Tidebreak Village & The Low Shoals",
+      "subtitle": "Where Salt Winds Greet the Horizon",
+      "biome": "beach",
+      "bounds": { "x": 30, "y": 170, "width": 80, "height": 60 },
+      "colorHex": "#0284c7",
+      "ambientWeather": "sea_spray",
+      "loreSummary": "A rustic coastal settlement perched atop rocky breakers and wooden piers. Home to seasoned mariners, dried fish smokehouses, and the ancient Beacon of Tidebreak."
+    },
+    {
+      "id": "region_cragwatch",
+      "name": "Cragwatch & Mistfall Peaks",
+      "subtitle": "The Slate Fortress of the High Winds",
+      "biome": "mountain",
+      "bounds": { "x": 160, "y": 20, "width": 90, "height": 60 },
+      "colorHex": "#64748b",
+      "ambientWeather": "mountain_snow",
+      "loreSummary": "Carved into the sheer granite face of Mistfall Peaks. Its smoke-plumed smelters refine luminous silver ore and lodestones unearthed from deep cavern veins."
+    },
+    {
+      "id": "region_deepwood",
+      "name": "The Deepwood Gloom",
+      "subtitle": "The Shrouded Canopy of the Forgotten",
+      "biome": "deepwood",
+      "bounds": { "x": 30, "y": 20, "width": 90, "height": 60 },
+      "colorHex": "#065f46",
+      "ambientWeather": "mist",
+      "loreSummary": "A primeval wilderness where sunlight barely pierces the emerald canopy. Legends speak of a secluded witch's apothecary and the slumbering Elderwood Shrine."
+    },
+    {
+      "id": "region_azure_coast",
+      "name": "The Azure Coast & Sunken Shoals",
+      "subtitle": "Sunken Arches and Smuggler Coves",
+      "biome": "ocean",
+      "bounds": { "x": 130, "y": 160, "width": 100, "height": 70 },
+      "colorHex": "#0891b2",
+      "ambientWeather": "sea_spray",
+      "loreSummary": "A windswept coastline of pristine sandbars, tidal sea arches, and drowned ruins left behind by the Great Eclipse Tide."
+    }
+  ],
+  "settlements": [
+    {
+      "id": "settlement_crownport",
+      "name": "Crownport",
+      "type": "city",
+      "regionId": "region_crownport",
+      "center": { "x": 180, "y": 110 },
+      "bounds": { "x": 150, "y": 85, "width": 60, "height": 50 },
+      "population": 2400,
+      "economy": ["maritime trade", "banking", "guild commerce", "shipwrighting"],
+      "mood": "bustling and ambitious",
+      "architectureStyle": "grand_stone",
+      "landmarks": ["The Great Clocktower", "Admiralty Docks", "Guildmaster Hall", "The King's Fountain"],
+      "loreSummary": "Constructed from pale granite and dark slate, Crownport is the jewel of the eastern sea."
+    },
+    {
+      "id": "settlement_oakhaven",
+      "name": "Oakhaven",
+      "type": "village",
+      "regionId": "region_oakhaven",
+      "center": { "x": 80, "y": 125 },
+      "bounds": { "x": 60, "y": 105, "width": 40, "height": 40 },
+      "population": 320,
+      "economy": ["timber", "herbal medicine", "wild honey", "fletching"],
+      "mood": "peaceful, earthy, vigilant",
+      "architectureStyle": "timber_thatch",
+      "landmarks": ["The Great Hearth Inn", "Elder Oak Well", "Apothecary Green"],
+      "loreSummary": "A cozy village built around a five-century-old oak whose roots feed the central freshwater well."
+    },
+    {
+      "id": "settlement_tidebreak",
+      "name": "Tidebreak",
+      "type": "village",
+      "regionId": "region_tidebreak",
+      "center": { "x": 70, "y": 200 },
+      "bounds": { "x": 50, "y": 180, "width": 40, "height": 40 },
+      "population": 210,
+      "economy": ["deep-sea fishing", "pearl diving", "kelp weaving", "boat salvage"],
+      "mood": "weathered, salty, superstitious",
+      "architectureStyle": "coastal_wood",
+      "landmarks": ["The Ancient Beacon", "Whalebone Pier", "Old Salty's Tavern"],
+      "loreSummary": "Its stilt-built docks groan with the ocean tides. Mariners here leave coins at the lighthouse to ward off sea sirens."
+    },
+    {
+      "id": "settlement_cragwatch",
+      "name": "Cragwatch",
+      "type": "town",
+      "regionId": "region_cragwatch",
+      "center": { "x": 205, "y": 50 },
+      "bounds": { "x": 185, "y": 30, "width": 40, "height": 40 },
+      "population": 480,
+      "economy": ["silver mining", "blacksmithing", "stone masonry", "highland wool"],
+      "mood": "sturdy, industrious, proud",
+      "architectureStyle": "slate_crag",
+      "landmarks": ["The Great Smelter Chimney", "Rope Gorge Bridge", "Miner's Rest Lodge"],
+      "loreSummary": "Perched on a razor-thin plateau overlooking the misty valleys below."
+    }
+  ],
+  "factions": [
+    {
+      "id": "faction_tideguard",
+      "name": "The Tideguard Admiralty",
+      "motto": "Order Across Every Wave",
+      "seatId": "settlement_crownport",
+      "description": "The disciplined maritime military order defending merchant sea lanes and cataloging ancient royal charts."
+    },
+    {
+      "id": "faction_weald_wardens",
+      "name": "The Weald Wardens",
+      "motto": "The Root Remembers",
+      "seatId": "settlement_oakhaven",
+      "description": "A quiet coalition of rangers, druids, and forest folk protecting the primeval flora from exploitation."
+    },
+    {
+      "id": "faction_silver_guild",
+      "name": "The High Peak Mining Guild",
+      "motto": "By Fire and Iron",
+      "seatId": "settlement_cragwatch",
+      "description": "Master smiths and excavation engineers who supply the realm with durable metals and arcane ore."
+    }
+  ],
+  "microStories": [
+    {
+      "id": "story_clockmaker",
+      "title": "The Clockmaker's Lost Chronometer",
+      "premise": "Master Horologist Jeremy disappeared after crafting a brass mechanism said to predict tidal surges.",
+      "resolutionText": "You unlocked the Grotto Vault and discovered Jeremy's masterpiece—the Tidal Chronometer—humming softly in synchronization with the sea.",
+      "steps": [
+        {
+          "stepIndex": 1,
+          "locationId": "poi_crownport_clocktower",
+          "locationName": "The Great Clocktower (Crownport)",
+          "clueText": "A scratched journal entry in the gears reads: 'My work provoked the merchant lords. I took the prototype west to the old woodcutter's lodge near Oakhaven.'",
+          "journalEntry": "Found a note in Crownport's Clocktower mentioning an abandoned cottage in Whispering Weald.",
+          "setsFlag": "story_clockmaker_1"
+        },
+        {
+          "stepIndex": 2,
+          "locationId": "poi_abandoned_cottage",
+          "locationName": "Abandoned Woodcutter Lodge (Weald)",
+          "clueText": "Under the floorboards lies a brass cipher plate: 'The gear points southeast to the Smuggler's Grotto beneath the Azure Cliffs.'",
+          "journalEntry": "Jeremy hid the vault key in a secret grotto behind the sea arches of Azure Coast.",
+          "requiredFlag": "story_clockmaker_1",
+          "setsFlag": "story_clockmaker_2"
+        },
+        {
+          "stepIndex": 3,
+          "locationId": "poi_clockmaker_grotto",
+          "locationName": "Sunken Clockwork Grotto (Azure Coast)",
+          "clueText": "Inserting the cipher plate unlocks the iron chest! Inside rests the Golden Tidal Chronometer and Jeremy's final peaceful letter.",
+          "journalEntry": "Recovered the Tidal Chronometer from the Sunken Clockwork Grotto.",
+          "requiredFlag": "story_clockmaker_2",
+          "setsFlag": "story_clockmaker_completed"
+        }
+      ]
+    },
+    {
+      "id": "story_ghost_ship",
+      "title": "The Ballad of the Pale Leviathan",
+      "premise": "Sailors in Tidebreak speak of a ghost frigate that appears on foggy evenings near the jagged reefs.",
+      "resolutionText": "You placed the Captain's Keepsake at the lighthouse memorial, laying the wandering spirits of the Pale Leviathan to rest.",
+      "steps": [
+        {
+          "stepIndex": 1,
+          "locationId": "poi_tidebreak_inn",
+          "locationName": "Old Salty's Tavern (Tidebreak)",
+          "clueText": "Old Marin mutters: 'The Leviathan didn't sink on reefs... the lighthouse went dark that cursed winter night. Check the Keeper's logbook.'",
+          "journalEntry": "Marin in Tidebreak suspects the lighthouse keeper 40 years ago was involved in the Pale Leviathan shipwreck.",
+          "setsFlag": "story_ghost_ship_1"
+        },
+        {
+          "stepIndex": 2,
+          "locationId": "poi_lighthouse_top",
+          "locationName": "The Ancient Beacon (Tidebreak)",
+          "clueText": "Inside a hidden niche in the beacon glass is Keeper Silas's remorseful diary: 'I took the bribe and snuffed the flame. The captain's compass washed ashore at Sorrow Cove.'",
+          "journalEntry": "The old keeper confessed. The captain's compass lies near the shipwreck in Sorrow Cove.",
+          "requiredFlag": "story_ghost_ship_1",
+          "setsFlag": "story_ghost_ship_2"
+        },
+        {
+          "stepIndex": 3,
+          "locationId": "poi_shipwreck_cove",
+          "locationName": "Sorrow Cove Shipwreck (Azure Coast)",
+          "clueText": "You find the Barnacle-Encrusted Compass among the ribs of the frigate and place a commemorative prayer stone.",
+          "journalEntry": "Laid the souls of the Pale Leviathan to rest at Sorrow Cove.",
+          "requiredFlag": "story_ghost_ship_2",
+          "setsFlag": "story_ghost_ship_completed"
+        }
+      ]
+    },
+    {
+      "id": "story_smugglers",
+      "title": "The Smuggler's Silver Cipher",
+      "premise": "Unmarked casks of refined silver are slipping out of Cragwatch without paying taxes to Crownport.",
+      "resolutionText": "You exposed the secret subterranean trade conduit running between Mistfall Peaks and the hidden coastal cove.",
+      "steps": [
+        {
+          "stepIndex": 1,
+          "locationId": "poi_crownport_docks",
+          "locationName": "Admiralty Wharf (Crownport)",
+          "clueText": "Dockmaster Vance is inspecting a barrel with a carved wolf-head sigil: 'This wasn't stamped by the Crown. It came down from the mountain trail.'",
+          "journalEntry": "Found illicit silver barrels with a wolf sigil at Crownport docks.",
+          "setsFlag": "story_smugglers_1"
+        },
+        {
+          "stepIndex": 2,
+          "locationId": "poi_mountain_pass_camp",
+          "locationName": "Hidden Mountain Cache (Dragon's Spine)",
+          "clueText": "Behind a boulder along the pass is a smuggler ledger listing secret night transfers to a secluded beach cave.",
+          "journalEntry": "Located a hidden ledger on Dragon's Spine Pass detailing drop-offs at Smuggler's Grotto.",
+          "requiredFlag": "story_smugglers_1",
+          "setsFlag": "story_smugglers_2"
+        },
+        {
+          "stepIndex": 3,
+          "locationId": "poi_smugglers_cave",
+          "locationName": "Smuggler's Cove Cache",
+          "clueText": "Inside the cavern you uncover the secret stash of refined silver bars and the wolf-sigil stamp.",
+          "journalEntry": "Discovered the smuggler's silver stash at Smuggler's Cove.",
+          "requiredFlag": "story_smugglers_2",
+          "setsFlag": "story_smugglers_completed"
+        }
+      ]
+    },
+    {
+      "id": "story_moonflower",
+      "title": "The Herbalist's Ancient Panacea",
+      "premise": "Healer Maeve in Oakhaven seeks the rare Luminescent Moonflower to cure the mountain miners' lung sickness.",
+      "resolutionText": "You gathered the Moonflower from the Deepwood fairy glade and helped craft the panacea elixir.",
+      "steps": [
+        {
+          "stepIndex": 1,
+          "locationId": "poi_oakhaven_apothecary",
+          "locationName": "Maeve's Apothecary (Oakhaven)",
+          "clueText": "Maeve sighs: 'The silver smelter smoke is harming the Cragwatch miners. If only I had a pristine Moonflower from the deepest grove of Deepwood.'",
+          "journalEntry": "Maeve in Oakhaven needs a rare Moonflower from Deepwood to formulate a cure.",
+          "setsFlag": "story_moonflower_1"
+        },
+        {
+          "stepIndex": 2,
+          "locationId": "poi_deepwood_glade",
+          "locationName": "The Moonlit Fairy Ring (Deepwood)",
+          "clueText": "In the center of the glowing mushroom circle blooms a radiant azure Moonflower. You carefully harvest the sacred petal.",
+          "journalEntry": "Harvested the Luminescent Moonflower from Deepwood's ancient stone ring.",
+          "requiredFlag": "story_moonflower_1",
+          "setsFlag": "story_moonflower_2"
+        },
+        {
+          "stepIndex": 3,
+          "locationId": "poi_cragwatch_infirmary",
+          "locationName": "Miner's Infirmary (Cragwatch)",
+          "clueText": "You deliver the remedy to Elder Burl in Cragwatch. The miners cheer as the cooling draft restores their vigor!",
+          "journalEntry": "Delivered the Moonflower elixir to Cragwatch miners, restoring peace between settlements.",
+          "requiredFlag": "story_moonflower_2",
+          "setsFlag": "story_moonflower_completed"
+        }
+      ]
+    },
+    {
+      "id": "story_sunken_king",
+      "title": "The Signet of the Drowned King",
+      "premise": "An ancient monarch, King Brandor, was buried with a seal that unlocks the sealed crypts under the sea cliff.",
+      "resolutionText": "You retrieved King Brandor's Signet and unlocked the Royal Vault inside the Sunken Crypt.",
+      "steps": [
+        {
+          "stepIndex": 1,
+          "locationId": "poi_mountain_shrine",
+          "locationName": "High Peak Lookout Shrine (Mistfall)",
+          "clueText": "An inscription on the granite plinth: 'When the Tide engulfed King Brandor's citadel, his signet was buried beneath the twin standing stones of Whispering Weald.'",
+          "journalEntry": "Found an inscription at Mistfall Shrine regarding King Brandor's lost signet ring.",
+          "setsFlag": "story_sunken_king_1"
+        },
+        {
+          "stepIndex": 2,
+          "locationId": "poi_weald_stone_circle",
+          "locationName": "Twin Monoliths (Whispering Weald)",
+          "clueText": "Examine the roots between the twin monoliths. Hidden in a hollow urn is the Sapphire Signet of King Brandor!",
+          "journalEntry": "Unearthed King Brandor's Sapphire Signet between the twin monoliths in the Weald.",
+          "requiredFlag": "story_sunken_king_1",
+          "setsFlag": "story_sunken_king_2"
+        },
+        {
+          "stepIndex": 3,
+          "locationId": "poi_sunken_crypt_vault",
+          "locationName": "Sunken Crypt of the Tide King",
+          "clueText": "Placing the signet into the stone recess causes the massive sealed door to grind open, revealing the ancient crown jewels.",
+          "journalEntry": "Unlocked the Royal Vault of the Sunken Crypt with King Brandor's Signet.",
+          "requiredFlag": "story_sunken_king_2",
+          "setsFlag": "story_sunken_king_completed"
+        }
+      ]
+    }
+  ],
+  "legends": [
+    {
+      "title": "The Weaver of the Weald",
+      "text": "It is whispered that deep in the northern gloom, a solitary weaver spins cloaks out of spider silk and morning mist, capable of turning the wearer completely invisible to forest beasts."
+    },
+    {
+      "title": "The Singing Sea Arch",
+      "text": "When the south wind blows through the hollow arches of Azure Coast, a haunting melody echoes across the waves, guiding lost vessels safely past treacherous sandbanks."
+    }
+  ],
+  "mysteries": [
+    {
+      "title": "The Hollow Monolith of Cragwatch",
+      "hint": "High in the mist near the rope bridge stands a monolith that rings like iron when struck.",
+      "locationRef": "poi_iron_monolith"
+    },
+    {
+      "title": "The Overgrown Well of Solitude",
+      "hint": "East of Oakhaven lies a dry stone well where dropped coins never make a sound when they reach the bottom.",
+      "locationRef": "poi_forgotten_well"
+    }
+  ]
+}

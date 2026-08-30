@@ -1,0 +1,18 @@
+import { defineConfig } from 'vite';
+import { fileURLToPath, URL } from 'url';
+
+export default defineConfig({
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  server: {
+    port: 5173,
+    host: true,
+  },
+  build: {
+    target: 'esnext',
+    assetsInlineLimit: 0,
+  },
+});

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Aethelgard - Procedural JRPG Exploration World</title>
+  <meta name="description" content="An experimental procedural 2D JRPG world exploration game featuring rich emergent geography, settlements, micro-stories, and atmospheric storytelling." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Outfit:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app-container">
+    <!-- Game Canvas Wrapper -->
+    <div id="game-container"></div>
+
+    <!-- Retro CRT & Vignette Overlays -->
+    <div id="vignette-overlay" class="pointer-events-none"></div>
+
+    <!-- UI Overlay for Dialogue, HUD, Codex, World Map -->
+    <div id="ui-overlay">
+      <!-- Location Toast Banner -->
+      <div id="location-banner" class="hidden">
+        <div class="banner-crest">✦</div>
+        <div class="banner-text">
+          <h2 id="banner-region-name">Crownport</h2>
+          <p id="banner-region-subtitle">The Gilded Haven of the Grand Bay</p>
+        </div>
+        <div class="banner-crest">✦</div>
+      </div>
+
+      <!-- Dialogue Box -->
+      <div id="dialogue-box" class="hidden">
+        <div class="dialogue-header">
+          <div class="dialogue-avatar" id="dialogue-avatar">🧙</div>
+          <div class="dialogue-speaker-meta">
+            <span id="dialogue-speaker-name">Eldrin</span>
+            <span id="dialogue-speaker-role">Archivist of the Docks</span>
+          </div>
+        </div>
+        <div class="dialogue-body">
+          <p id="dialogue-text"></p>
+        </div>
+        <div class="dialogue-footer">
+          <div id="dialogue-choices" class="dialogue-choices"></div>
+          <div class="dialogue-prompt">Press [SPACE] or Click to continue ▾</div>
+        </div>
+      </div>
+
+      <!-- Exploration Interaction Prompt -->
+      <div id="interaction-prompt" class="hidden">
+        <span class="key-badge">E</span>
+        <span id="prompt-action-text">Talk to NPC</span>
+      </div>
+
+      <!-- Mini-HUD (Top Bar) -->
+      <div id="hud-top-bar">
+        <div class="hud-pill" id="hud-location">
+          <span class="hud-icon">📍</span>
+          <span id="hud-location-text">Crownport Plaza</span>
+        </div>
+        <div class="hud-pill" id="hud-time">
+          <span class="hud-icon">⏳</span>
+          <span id="hud-time-text">Day (12:00)</span>
+        </div>
+        <div class="hud-buttons">
+          <button id="btn-world-map" class="hud-btn" title="Toggle World Map (M)">
+            <span>🗺️ Map</span>
+          </button>
+          <button id="btn-codex" class="hud-btn" title="Toggle Lore Codex / Journal (J)">
+            <span>📜 Journal</span>
+          </button>
+          <button id="btn-debug" class="hud-btn" title="Toggle Debug Info (F3 or ~)">
+            <span>🛠️ Debug</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- World Map Modal -->
+      <div id="world-map-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content parchment-box">
+          <div class="modal-header">
+            <h2>Chronicles of Aethelgard — World Map</h2>
+            <button class="modal-close" id="close-map-btn">✕</button>
+          </div>
+          <div class="map-body">
+            <div id="world-map-canvas-container">
+              <canvas id="world-map-canvas" width="640" height="500"></canvas>
+            </div>
+            <div class="map-legend">
+              <div class="legend-item"><span class="legend-dot city"></span> Large City (Crownport)</div>
+              <div class="legend-item"><span class="legend-dot town"></span> Towns & Villages</div>
+              <div class="legend-item"><span class="legend-dot dungeon"></span> Shrines & Caves</div>
+              <div class="legend-item"><span class="legend-dot secret"></span> Discovered Secrets</div>
+              <div class="legend-item"><span class="legend-dot player"></span> You are here</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <span>Press <strong>[M]</strong> to close map. Discovered regions are illuminated.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lore Codex / Story Journal Modal -->
+      <div id="codex-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content parchment-box">
+          <div class="modal-header">
+            <h2>Traveler's Journal & Lore Codex</h2>
+            <button class="modal-close" id="close-codex-btn">✕</button>
+          </div>
+          <div class="codex-body">
+            <div class="codex-sidebar">
+              <button class="codex-tab active" data-tab="stories">Micro-Stories (<span id="story-count">0/5</span>)</button>
+              <button class="codex-tab" data-tab="secrets">Secrets (<span id="secret-count">0/10</span>)</button>
+              <button class="codex-tab" data-tab="lore">World Bible & History</button>
+              <button class="codex-tab" data-tab="npcs">Notable People (<span id="npc-count">0/30</span>)</button>
+            </div>
+            <div class="codex-pane" id="codex-pane-content">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+          <div class="modal-footer">
+            <span>Press <strong>[J]</strong> to close journal. Clues link together as you wander.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Developer Debug Overlay -->
+      <div id="debug-overlay" class="hidden">
+        <div class="debug-header">
+          <h3>⚡ Antigravity World Debugger</h3>
+          <span class="badge">F3 / ~</span>
+        </div>
+        <div class="debug-grid">
+          <div class="debug-row"><span>Position:</span> <span id="dbg-pos">X: 0, Y: 0 (Tile: 0, 0)</span></div>
+          <div class="debug-row"><span>Region / Chunk:</span> <span id="dbg-region">Crownport (Chunk 2, 3)</span></div>
+          <div class="debug-row"><span>Biome:</span> <span id="dbg-biome">Coastal Port</span></div>
+          <div class="debug-row"><span>Seed:</span> <span id="dbg-seed">Aethelgard-4891</span></div>
+          <div class="debug-row"><span>FPS:</span> <span id="dbg-fps">60 FPS</span></div>
+          <div class="debug-row"><span>Nearby Entities:</span> <span id="dbg-entities">0 NPCs, 0 POIs</span></div>
+        </div>
+        <div class="debug-controls">
+          <label><input type="checkbox" id="dbg-collision-toggle" /> Show Collision Wireframes</label>
+          <label><input type="checkbox" id="dbg-speed-toggle" /> Super Speed (x3)</label>
+          <div class="teleport-section">
+            <span>Quick Teleport:</span>
+            <select id="dbg-teleport-select">
+              <option value="">-- Jump to Location --</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls Help Hint -->
+      <div id="controls-hint">
+        <span>[WASD / Arrows] Move</span>
+        <span>[Shift] Sprint</span>
+        <span>[E / Space] Interact</span>
+        <span>[M] Map</span>
+        <span>[J] Journal</span>
+        <span>[F3] Debug</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
